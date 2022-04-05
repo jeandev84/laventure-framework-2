@@ -38,9 +38,9 @@ class MigrationServiceProvider extends ServiceProvider
     public function terminate()
     {
         $loader = new MigrationLoader($this->app, $this->app[Migrator::class]);
-        $loader->setResourcePattern($this->app['config']['app.resources.migrations'])
-               ->setNamespace($this->app['config']['app.namespaces.migrations'])
-               ->setLocatePath($this->app['config']['app.directories.migrations']);
+        $loader->setResourcePattern('app/Migration/*.php')
+               ->setNamespace('App\\Migration')
+               ->setLocatePath('app/Migration');
 
         $loader->loadMigrations($this->app['@fs']);
         $this->app->instance(MigrationLoader::class, $loader);

@@ -57,6 +57,6 @@ class FixtureGenerator extends StubGenerator
            ]);
 
            // app/Fixtures/ProductFixture.php
-           return $this->writeTo($this->loader->generateLocatePath($fixtureClass), $stub);
+           return $this->writeTo($this->loader->loadLocatePath($fixtureClass), $stub);
     }
 }

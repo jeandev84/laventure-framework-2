@@ -11,6 +11,7 @@ use Laventure\Component\Database\ORM\Manager\Contract\ObjectManager;
 use Laventure\Component\Database\ORM\Manager\EntityManager;
 use Laventure\Component\Database\ORM\Manager\Fixtures\FixtureManager;
 use Laventure\Component\Database\Schema\Schema;
+use Laventure\Foundation\Loaders\EntityLoader;
 use Laventure\Foundation\Loaders\FixtureLoader;
 use Laventure\Foundation\Service\ORM\EntityManagerService;
 
@@ -58,17 +59,49 @@ class DatabaseServiceProvider extends ServiceProvider
     */
     public function terminate()
     {
-         $fixtureManager = new FixtureManager($this->em());
-         $loader = new FixtureLoader($this->app, $fixtureManager);
-
-         $loader->setResourcePattern($this->app['config']['app.resources.fixtures'])
-                ->setLocatePath($this->app['config']['app.directories.fixtures'])
-                ->setNamespace($this->app['config']['app.namespaces.fixtures']);
-
-         $loader->addFixtures($this->app['@fs']);
-
-         $this->app->instance(FixtureLoader::class, $loader);
+         $this->registerFixtureLoader();
+         $this->registerEntityLoader();
     }
+
+
+
+    /**
+     * @return void
+    */
+    private function registerFixtureLoader()
+    {
+          $fixtureManager = new FixtureManager($this->em());
+          $fixtureLoader  = new FixtureLoader($this->app, $fixtureManager);
+
+          $fixtureLoader->setResourcePattern('app/Fixtures/*.php')
+                        ->setLocatePath('app/Fixtures')
+                        ->setNamespace('App\\Fixtures');
+
+          $fixtureLoader->addFixtures($this->app['@fs']);
+
+          $this->app->instance(FixtureLoader::class, $fixtureLoader);
+    }
+
+
+
+
+    /**
+     * @return void
+    */
+    private function registerEntityLoader()
+    {
+         $entityLoader = new EntityLoader($this->app);
+
+         $entityLoader->setEntityLocatePath("app/Entity")
+                      ->setRepositoryPath("app/Repository")
+                      ->setEntityNamespace("App\\Entity")
+                      ->setRepositoryNamespace("App\\Repository");
+
+         $this->app->instance(EntityLoader::class, $entityLoader);
+    }
+
+
+
 
 
     /**
@@ -76,6 +109,6 @@ class DatabaseServiceProvider extends ServiceProvider
     */
     private function em()
     {
-        return $this->app[EntityManager::class];
+         return $this->app[EntityManager::class];
     }
 }

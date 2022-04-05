@@ -176,6 +176,6 @@ class RouteLoader extends Loader
      */
      public function generateControllerPath($controllerName): string
      {
-         return $this->generatePath($this->controllerPath, $controllerName);
+         return $this->makePath($this->controllerPath, $controllerName);
      }
 }

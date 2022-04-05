@@ -178,7 +178,7 @@ class StubGenerator
         $module     = str_replace($className, '', implode('\\', $entryParts));
         $module     = $module ? '\\'. trim(ucfirst($module), '\\') : '';
 
-        return ['className' => $className, 'moduleName' => $module];
+        return ['className' => $className, 'moduleName' => ucfirst($module)];
     }
 
 }

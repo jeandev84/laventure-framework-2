@@ -120,7 +120,7 @@ class CommandGenerator extends StubGenerator
      */
      public function generateCommandPath(string $commandClass): string
      {
-          return $this->loader->generateLocatePath($commandClass);
+          return $this->loader->loadLocatePath($commandClass);
      }
 
 

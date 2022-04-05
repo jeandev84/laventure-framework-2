@@ -7,6 +7,7 @@ use Laventure\Component\Routing\Collection\Route;
 use Laventure\Component\Routing\Collection\RouteCollection;
 use Laventure\Component\Routing\Dispatcher\RouteDispatcher;
 use Laventure\Component\Routing\Dispatcher\RouteDispatcherInterface;
+use Laventure\Component\Routing\Exception\NotFoundException;
 use Laventure\Component\Routing\Group\RouteGroup;
 use Laventure\Component\Routing\Resource\ApiResource;
 use Laventure\Component\Routing\Resource\Contract\ApiResourceInterface;
@@ -786,6 +787,25 @@ class Router implements RouterInterface
     public function dispatchRoute(Route $route)
     {
         return $this->dispatcher->dispatchRoute($route);
+    }
+
+
+    /**
+     * Call route
+     *
+     * @param string $requestMethod
+     * @param string $requestPath
+     * @return void
+     * @throws NotFoundException
+    */
+    public function run(string $requestMethod, string $requestPath)
+    {
+        // check match route
+        if (! $route = $this->match($requestMethod, $requestPath)) {
+            throw new NotFoundException("route '{$requestPath}' not found");
+        }
+
+        return $this->dispatchRoute($route);
     }
 
 

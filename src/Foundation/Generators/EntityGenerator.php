@@ -5,6 +5,8 @@ namespace Laventure\Foundation\Generators;
 
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
+use Laventure\Foundation\Loaders\EntityLoader;
+
 
 /**
  * @EntityGenerator
@@ -12,15 +14,30 @@ use Laventure\Foundation\Application;
 class EntityGenerator extends StubGenerator
 {
 
+
+      /**
+       * @var EntityLoader
+      */
+      protected $loader;
+
+
+
+
       /**
        * EntityGenerator constructor.
        *
        * @param Application $app
        * @param FileSystem $fileSystem
+       * @param EntityLoader $loader
       */
-      public function __construct(Application $app, FileSystem $fileSystem)
+      public function __construct(
+          Application $app,
+          FileSystem $fileSystem,
+          EntityLoader $loader
+      )
       {
             parent::__construct($app, $fileSystem);
+            $this->loader = $loader;
       }
 
 
@@ -29,17 +46,13 @@ class EntityGenerator extends StubGenerator
       /**
         * Generate entity.
         *
-        * @param string $entityName
+        * @param string $entityPoint
         * @return bool
       */
-      public function generate(string $entityName): bool
+      public function generate(string $entityPoint): bool
       {
-            $parts       = $this->generateClassAndModule($entityName);
-            $entityClass = $parts['className'];
-            $module      = $parts['moduleName'];
-
-            if ($this->createdEntityAndRepository($entityClass, $module, $entityName)) {
-                 return true;
+            if ($this->generateEntity($entityPoint) && $this->generateRepository($entityPoint)) {
+                return true;
             }
 
             return false;
@@ -49,41 +62,22 @@ class EntityGenerator extends StubGenerator
 
 
       /**
-       * Created entity and repository.
-       *
-       * @param string $entityClass
-       * @param string $path
-       * @param string $module
+       * @param string $entryPoint
        * @return bool
       */
-      public function createdEntityAndRepository(string $entityClass, string $module, string $path): bool
+      public function generateEntity(string $entryPoint): bool
       {
-           return $this->generateEntity($entityClass, $module, $path)
-                  && $this->generateRepository($entityClass, $module, $path);
-      }
+           $parts       = $this->generateClassAndModule($entryPoint);
+           $entityClass = $parts['className'];
+           $module      = $parts['moduleName'];
+
+           $entityStub = $this->generateStub('orm/entity/entity', [
+              "EntityNamespace" => $this->loader->loadEntityNamespace($module),
+              "EntityClass"     => $entityClass
+           ]);
 
 
-
-
-
-      /**
-       * Generate only entity
-       *
-       * @param string $entityClass
-       * @param string $module
-       * @param string $path
-       * @return bool
-      */
-      public function generateEntity(string $entityClass, string $module, string $path): bool
-      {
-            // make entity
-            $entityStub = $this->generateStub('orm/entity/entity', [
-               "EntityNamespace" => "App\\Entity{$module}",
-               "EntityClass"     => $entityClass
-            ]);
-
-
-            return $this->writeTo("app/Entity/{$path}.php", $entityStub);
+           return $this->writeTo($this->loader->loadEntityPath($entryPoint), $entityStub);
       }
 
 
@@ -92,22 +86,27 @@ class EntityGenerator extends StubGenerator
       /**
        * Generate only repository
        *
-       * @param string $entityClass
-       * @param string $module
-       * @param string $path
+       * @param string $entryPoint
        * @return bool
       */
-      public function generateRepository(string $entityClass, string $module, string $path): bool
+      public function generateRepository(string $entryPoint): bool
       {
-            // make repository
-            $repositoryStub = $this->generateStub('orm/entity/repository', [
-               "RepositoryNamespace"  => "App\\Repository{$module}",
-               "RepositoryName"       => sprintf('%sRepository', $entityClass),
-               "EntityClassNamespace" => "App\\Entity{$module}\\{$entityClass}",
-               "EntityClass"          => $entityClass
-            ]);
+          $parts       = $this->generateClassAndModule($entryPoint);
+          $entityClass = $parts['className'];
+          $module      = $parts['moduleName'];
 
-            return $this->writeTo("app/Repository/{$path}Repository.php", $repositoryStub);
+          $entityClassNamespace = $this->loader->getFullNamespaceEntityClass($entityClass, $module);
+
+          $repositoryStub = $this->generateStub('orm/entity/repository', [
+              "RepositoryNamespace"  => $this->loader->loadRepositoryNamespace($module),
+              "RepositoryName"       => sprintf('%sRepository', $entityClass),
+              "EntityClassNamespace" => $entityClassNamespace,
+              "EntityClass"          => $entityClass
+          ]);
+
+
+          return $this->writeTo($this->loader->loadRepositoryPath($entryPoint), $repositoryStub);
       }
+
 
 }

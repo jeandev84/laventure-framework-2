@@ -78,6 +78,6 @@ class MigrationGenerator extends StubGenerator
     */
     public function loadMigrationPath(string $migrationName): string
     {
-        return $this->loader->generateLocatePath($migrationName);
+        return $this->loader->loadLocatePath($migrationName);
     }
 }

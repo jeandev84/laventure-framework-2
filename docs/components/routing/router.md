@@ -36,14 +36,12 @@ $router->get('/auth/back',  function () {
 
 
 
-
-
 dump($router->getRoutes());
 
 
 try {
 
-    $route = $router->dispatchRoute($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+    $output = $router->run($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 } catch (\Laventure\Component\Routing\Exception\NotFoundException $e) {
 
@@ -52,14 +50,7 @@ try {
 }
 
 
-$target = $route->getTarget();
-
-if (! is_callable($target)) {
-    $controllerClass = $route->getOption("@controller");
-    $target = [new $controllerClass(), $route->getOption("@action")];
-}
-
-$response = call_user_func_array($target, $route->getMatches());
-
-echo $response;
+$response = new Response($output);
+$response->send();
+$response->sendBody();
 ```

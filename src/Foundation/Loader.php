@@ -46,7 +46,7 @@ abstract class Loader
       /**
        * @var string
       */
-      protected $namespace;
+      protected $namespace = "";
 
 
 
@@ -107,11 +107,11 @@ abstract class Loader
        * @param string $fileName
        * @return string
       */
-      public function generateLocatePath(string $fileName): string
+      public function loadLocatePath(string $fileName): string
       {
           $path = $this->trimmedPath($this->getLocatePath());
 
-          return $this->generatePath($path, $fileName);
+          return $this->makePath($path, $fileName);
       }
 
 
@@ -122,9 +122,9 @@ abstract class Loader
        * @param string $fileName
        * @return string
       */
-      public function generatePath(string $path, string $fileName): string
+      protected function makePath(string $path, string $fileName): string
       {
-          return sprintf("%s/%s.php", $path, $fileName);
+           return sprintf("%s/%s.php", $path, $fileName);
       }
 
 
@@ -132,9 +132,9 @@ abstract class Loader
 
 
       /**
-       * @return mixed
-      */
-      public function getLocatePath()
+       * @return string
+       */
+      public function getLocatePath(): string
       {
            return $this->path;
       }
@@ -142,13 +142,31 @@ abstract class Loader
 
 
 
+      /**
+       * @param string $namespace
+       * @param string|null $suffix
+       * @return string
+      */
+      protected function makeNamespace(string $namespace, string $suffix = null): string
+      {
+           if ($suffix) {
+               $suffix = "\\". trim($suffix, "\\");
+           }
+
+           return sprintf('%s%s', $namespace, $suffix);
+      }
+
+
 
       /**
-       * @return mixed
+       * @param string|null $module
+       * @return string
       */
-      public function getNamespace()
+      public function getNamespace(string $module = null): string
       {
-           return $this->trimmedNamespace($this->namespace);
+           $namespace = $this->trimmedNamespace($this->namespace);
+
+           return $this->makeNamespace($namespace, $module);
       }
 
 
@@ -166,15 +184,15 @@ abstract class Loader
 
 
       /**
-       * @param string|null $className
-       * @return mixed|string
+       * @param string|null $class
+       * @return string
       */
-      public function loadNamespace(string $className = null)
+      public function loadNamespace(string $class = null): string
       {
           $namespace = $this->getNamespace();
 
-          if ($className) {
-              return sprintf('%s\\%s', $namespace, $className);
+          if ($class) {
+              return sprintf('%s\\%s', $namespace, $class);
           }
 
           return $namespace;
@@ -232,10 +250,10 @@ abstract class Loader
 
 
       /**
-       * @param $path
+       * @param string $path
        * @return string
       */
-      protected function trimmedPath($path): string
+      protected function trimmedPath(string $path): string
       {
           return trim($path, '\\/');
       }

@@ -43,10 +43,10 @@ class ConsoleServiceProvider extends ServiceProvider
     public function terminate()
     {
         $loader = new CommandLoader($this->app, $this->app[Console::class]);
-        $loader->setLocatePath($this->app['config']['app.directories.commands'])
-               ->setResourcePattern($this->app['config']['app.resources.commands'])
-               ->setNamespace($this->app['config']['app.namespaces.commands'])
-               ->setLoadPaths($this->app['config']['app.paths.routes.console']);
+        $loader->setLocatePath('app/Console/Command')
+               ->setResourcePattern('app/Console/Command/*.php')
+               ->setNamespace('App\\Console\\Command')
+               ->setLoadPaths('/config/routes/console.php');
 
         $loader->loadCommands($this->app['@fs']);
         $loader->loadPaths($this->app['@fs']);
