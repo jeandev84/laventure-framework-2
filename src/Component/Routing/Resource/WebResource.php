@@ -25,15 +25,4 @@ class WebResource extends AbstractResource implements WebResourceInterface
               ['DELETE', '/delete/{id}', 'delete', 'delete']
           ];
     }
-
-
-
-
-    /**
-     * @return string[]
-    */
-    public static function getActions(): array
-    {
-         return ['list', 'show', 'create', 'edit', 'delete'];
-    }
 }

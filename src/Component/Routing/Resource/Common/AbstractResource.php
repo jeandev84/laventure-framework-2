@@ -173,6 +173,9 @@ abstract class AbstractResource
      *
      * @return array
     */
-    abstract public static function getActions(): array;
+    public static function getActions(): array
+    {
+        return ['list', 'show', 'create', 'edit', 'delete'];
+    }
 
 }
