@@ -29,7 +29,9 @@ class MigrationServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(Migrator::class, function () {
-            return new Migrator($this->app['db.connection']);
+            $migrator = new Migrator($this->app['db.connection']);
+            $migrator->table($this->app['config']['database.migration_table']);
+            return $migrator;
         });
 
     }
@@ -40,7 +42,8 @@ class MigrationServiceProvider extends ServiceProvider
         $loader = new MigrationLoader($this->app, $this->app[Migrator::class]);
         $loader->setResourcePattern('app/Migration/*.php')
                ->setNamespace('App\\Migration')
-               ->setLocatePath('app/Migration');
+               ->setLocatePath('app/Migration')
+        ;
 
         $loader->loadMigrations($this->app['@fs']);
         $this->app->instance(MigrationLoader::class, $loader);
