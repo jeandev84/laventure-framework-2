@@ -1,0 +1,9 @@
+
+        /**
+         * @param Request $request
+         * @return Response
+        */
+        public function ActionName(Request $request): Response
+        {
+               return $this->render('ViewPath');
+        }

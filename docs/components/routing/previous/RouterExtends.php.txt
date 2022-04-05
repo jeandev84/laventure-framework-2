@@ -1,0 +1,528 @@
+<?php
+namespace Laventure\Component\Routing\Previous;
+
+
+
+use Closure;
+use Laventure\Component\Routing\Common\AbstractRouter;
+use Laventure\Component\Routing\Exception\NotFoundException;
+use Laventure\Component\Routing\Route;
+
+
+/**
+ * @RouterExtends
+*/
+class RouterExtends extends AbstractRouter
+{
+
+
+    /**
+     * Controller namespace
+     *
+     * @var string
+    */
+    protected $namespace;
+
+
+
+
+
+    /**
+     * Route patterns
+     *
+     * @var array
+    */
+    protected $patterns = [
+        'id'         => '\d+', // [0-9]+
+        'lang'       => '\w+', // _local
+        'controller' => '',
+        'action'     => ''
+    ];
+
+
+
+
+
+
+    /**
+     * Store route middlewares priorities
+     *
+     * @var array
+    */
+    protected $middlewares = [];
+
+
+
+
+
+    /**
+     * @var string[]
+    */
+    protected $options = [
+        'prefix'      => '',
+        'module'      => '',
+        'name'        => '',
+        'middlewares' => []
+    ];
+
+
+
+
+    /**
+     * Map route
+     *
+     * @param string|array $methods
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function map($methods, string $path, $callback, string $name = null): Route
+    {
+          $options  = $this->getRouteOptions();
+
+          $route = $this->makeRoute($methods, $path, $callback, $options);
+
+          if ($name) {
+             $route->name($name);
+          }
+
+          return $this->addRoute($route);
+    }
+
+
+
+
+
+    /**
+     * Add route will be called by method GET
+     *
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function get(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('GET', $path, $callback, $name);
+    }
+
+
+
+
+
+    /**
+     * Add route will be called by method POST
+     *
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function post(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('POST', $path, $callback, $name);
+    }
+
+
+
+
+
+
+    /**
+     * Add route will be called by method PUT
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+     */
+    public function put(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('PUT', $path, $callback, $name);
+    }
+
+
+
+
+
+    /**
+     * Add route will be called by method PATCH
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function patch(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('PATCH', $path, $callback, $name);
+    }
+
+
+
+
+
+    /**
+     * Add route will be called by method DELETE
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function delete(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('DELETE', $path, $callback, $name);
+    }
+
+
+
+
+
+    /**
+     * Add route will be called by method DELETE
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function options(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('OPTIONS', $path, $callback, $name);
+    }
+
+
+
+
+
+    /**
+     * Add route will be called by method each method [ GET, POST, PUT, DELETE, PATCH ]
+     *
+     * @param string $path
+     * @param $callback
+     * @param string|null $name
+     * @return Route
+    */
+    public function any(string $path, $callback, string $name = null): Route
+    {
+        return $this->map('GET|POST|PUT|DELETE|PATCH', $path, $callback, $name);
+    }
+
+
+
+
+
+    /**
+     * @param Closure $routes
+     * @param array $attributes
+     * @return $this
+    */
+    public function group(Closure $routes, array $attributes = []): self
+    {
+          if ($attributes) {
+              $this->withOptions($attributes);
+          }
+
+          $routes($this);
+
+          $this->refreshOptions();
+
+          return $this;
+    }
+
+
+
+
+    /**
+     * @param Closure|null $closure
+     * @param array $attributes
+     * @return $this
+    */
+    public function api(Closure $closure = null, array $attributes = []): self
+    {
+        $attributes = array_merge($this->getDefaultAttributesAPI(), $attributes);
+
+        if (! $closure) {
+            $this->withOptions($attributes);
+            return $this;
+        }
+
+        return $this->group($closure, $attributes);
+    }
+
+
+
+
+    /**
+     * @param string $namespace
+     * @return $this
+    */
+    public function namespace(string $namespace): self
+    {
+         $this->namespace = $namespace;
+
+         return $this;
+    }
+
+
+
+
+    /**
+     * @param string $prefix
+     * @return $this
+    */
+    public function prefix(string $prefix): self
+    {
+        return $this->withOptions(compact('prefix'));
+    }
+
+
+
+
+
+    /**
+     * @param string $module
+     * @return $this
+    */
+    public function module(string $module): self
+    {
+         return $this->withOptions(compact('module'));
+    }
+
+
+
+
+    /**
+     * @param string $name
+     * @return $this
+    */
+    public function name(string $name): self
+    {
+         return $this->withOptions(compact('name'));
+    }
+
+
+
+
+    /**
+     * @param $middlewares
+     * @return $this
+    */
+    public function middleware($middlewares): self
+    {
+         return $this->withOptions(compact('middlewares'));
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function dispatch(string $requestMethod, string $requestPath)
+    {
+          return (function () use ($requestMethod, $requestPath) {
+
+              if (! $route = $this->match($requestMethod, $requestPath)) {
+                  throw new NotFoundException("route {$requestPath} not found", 404);
+              }
+
+              return $route;
+
+          })();
+    }
+
+
+
+    /**
+     * @param array $options
+     * @return $this
+    */
+    public function withOptions(array $options): self
+    {
+        $this->options = array_merge($this->options, $options);
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * @return void
+    */
+    public function refreshOptions()
+    {
+        $this->options = [];
+    }
+
+
+
+
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function removeOption(string $name)
+    {
+        unset($this->options[$name]);
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     * @param $default
+     * @return mixed|string|null
+    */
+    public function getOption(string $name, $default = null)
+    {
+         return $this->options[$name] ?? $default;
+    }
+
+
+
+
+    /**
+     * @return string[]
+    */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+
+
+
+    /**
+     * @return false|string
+    */
+    public function getControllerNamespace()
+    {
+        if (! $this->namespace) {
+            return false;
+        }
+
+        if ($module = $this->getOption('module')) {
+            $module = '\\' . trim($module, '\\') . '\\';
+        }
+
+        return $this->namespace . $module;
+    }
+
+
+
+
+    /**
+     * @param string $controllerName
+     * @return string
+    */
+    public function getControllerClass(string $controllerName): string
+    {
+        if ($namespace = $this->getControllerNamespace()) {
+            return trim($namespace, '\\') . '\\' . $controllerName;
+        }
+
+        return $controllerName;
+    }
+
+
+
+
+    /**
+     * Resolve methods
+     *
+     * @param $methods
+     * @return array
+    */
+    protected function resolveMethods($methods): array
+    {
+        if (\is_string($methods)) {
+            $methods = explode('|', $methods);
+        }
+
+        return (array) $methods;
+    }
+
+
+
+
+    /**
+     * Resolve path
+     *
+     * @param $path
+     * @return string
+    */
+    protected function resolvePath($path): string
+    {
+         if ($prefix = $this->getOption('prefix')) {
+             $path = trim($prefix, '/'). '/'. ltrim($path, '/');
+         }
+
+         return $path;
+    }
+
+
+
+
+
+    /**
+     * @param mixed $callback
+     * @return mixed
+    */
+    protected function resolveCallback($callback)
+    {
+        if (is_string($callback) && (stripos($callback, '@') !== false)) {
+            list($controller, $action) = explode('@', $callback, 2);
+            return [$this->getControllerClass($controller), $action];
+        }
+
+        return $callback;
+    }
+
+
+
+
+    /**
+     * @return array
+    */
+    protected function getRouteOptions(): array
+    {
+        return [
+            "@prefix" => $this->getOption('prefix', ''),
+            "@module" => $this->getOption('module', ''),
+            "@name"   => $this->getOption('name', '')
+        ];
+    }
+
+
+
+    /**
+     * @return array
+    */
+    protected function getMiddlewares(): array
+    {
+        return array_merge($this->middlewares, $this->getOption('middlewares', []));
+    }
+
+
+
+    /**
+     * @return string[]
+    */
+    protected function getDefaultAttributesAPI(): array
+    {
+        return [
+            'prefix' => 'api',
+            'module' => 'Api',
+            'name'   => 'api.'
+        ];
+    }
+
+}

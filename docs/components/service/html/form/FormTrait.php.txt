@@ -1,0 +1,119 @@
+<?php
+namespace Laventure\Component\Service\Html\Form\Utils;
+
+
+/**
+ * @FormTrait
+*/
+trait FormTrait
+{
+
+    /**
+     * Generate attributes
+     *
+     * @param array $attributes
+     * @return string
+    */
+    public function formatAttributes(array $attributes): string
+    {
+         $str = [];
+
+         foreach ($attributes as $key => $value) {
+              if (is_string($key)) {
+                  $str[] = sprintf(' %s="%s"', $key, $value);
+              }
+         }
+
+         return join('', $str);
+    }
+
+
+
+
+    /**
+     * @param $tagName
+     * @param array $attributes
+     * @return string
+    */
+    protected function openTag($tagName, array $attributes = []): string
+    {
+          return sprintf("<{$tagName}%s>", $this->formatAttributes($attributes));
+    }
+
+
+
+
+    /**
+     * @param $tagName
+     * @return string
+    */
+    protected function closeTag($tagName): string
+    {
+         return "</{$tagName}>";
+    }
+
+
+
+    public function generateAttributesToTest(array $attributes): string
+    {
+        $attributes = array_filter($attributes, function ($key, $value) {
+            return is_string($key) ? sprintf(' %s="%s"', $key, $value) : '';
+        });
+
+        return join('', $attributes);
+    }
+}
+
+
+
+/*
+function generateAttributesF(array $attributes): string
+{
+    $attributes = array_filter($attributes, function ($key, $value) {
+        return is_string($key) ? sprintf(' %s="%s"', $key, $value) : '';
+    }, ARRAY_FILTER_USE_BOTH);
+
+    return join('', $attributes);
+}
+
+function generateAttributes(array $attributes): string
+{
+    $attributes = array_map(function ($key, $value) {
+        return is_string($key) ? sprintf(' %s="%s"', $key, $value) : '';
+    }, $attributes);
+
+    return join('', $attributes);
+}
+
+
+echo generateAttributes([
+    'style' => 'margin: 0 auto;',
+    'class' => 'form-control'
+]);
+*/
+
+/*
+
+function generateAttributes(array $attributes): string
+{
+    $str = [];
+
+    foreach ($attributes as $key => $value) {
+        if (is_string($key)) {
+            $str[] = sprintf(' %s="%s"', $key, $value);
+        }
+    }
+
+    return join('', $str);
+}
+
+
+$attrs = generateAttributes([
+    'style' => 'margin: 0 auto;',
+    'class' => 'form-control'
+]);
+
+
+echo sprintf('<input type="text"%s>', $attrs);
+
+*/

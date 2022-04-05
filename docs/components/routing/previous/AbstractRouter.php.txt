@@ -1,0 +1,425 @@
+<?php
+namespace Laventure\Component\Routing\Previous;
+
+
+use Laventure\Component\Routing\Contract\RouteCallerInterface;
+use Laventure\Component\Routing\Contract\RouteDispatcherInterface;
+use Laventure\Component\Routing\Contract\RouterInterface;
+use Laventure\Component\Routing\Route;
+use Laventure\Component\Routing\RouteCollection;
+
+
+/**
+ * @AbstractRouter
+*/
+abstract class AbstractRouter implements RouterInterface
+{
+
+
+    /**
+     * Domain
+     *
+     * @var string
+     */
+    protected $domain = '';
+
+
+
+
+
+    /**
+     * Route collection
+     *
+     * @var RouteCollection
+    */
+    protected $routes;
+
+
+
+
+
+    /**
+     * Current route
+     *
+     * @var Route
+    */
+    protected $route;
+
+
+
+
+
+
+    /**
+     * Route patterns
+     *
+     * @var array
+    */
+    protected $patterns = [];
+
+
+
+
+
+
+    /**
+     * Store route middlewares priorities
+     *
+     * @var array
+    */
+    protected $middlewares = [];
+
+
+
+
+
+    /**
+     * Router constructor
+     *
+     * @param array $routes
+    */
+    public function __construct(array $routes = [])
+    {
+         $this->routes = new RouteCollection($routes);
+    }
+
+
+
+
+    /**
+     * Add route
+     *
+     * @param Route $route
+     * @return Route
+    */
+    public function addRoute(Route $route): Route
+    {
+        $middlewares = $this->getMiddlewares();
+
+        $route->domain($this->domain)
+              ->where($this->patterns)
+              ->middlewares($middlewares);
+
+        return $this->routes->addRoute($route);
+    }
+
+
+
+
+
+
+    /**
+     * @param array $routes
+     * @return void
+    */
+    public function addRoutes(array $routes)
+    {
+        foreach ($routes as $route) {
+            $this->addRoute($route);
+        }
+    }
+
+
+
+
+
+    /**
+     * Make route
+     *
+     * @param $methods
+     * @param string $path
+     * @param $callback
+     * @param array $options
+     * @return Route
+    */
+    public function makeRoute($methods, string $path, $callback, array $options = []): Route
+    {
+         $methods   = $this->resolveMethods($methods);
+         $path      = $this->resolvePath($path);
+         $callback  = $this->resolveCallback($callback);
+
+         return new Route($methods, $path, $callback, $options);
+    }
+
+
+
+
+
+    /**
+     * Determine if matched route
+     *
+     * @param string $requestMethod
+     * @param string $requestPath
+     * @return false|Route
+    */
+    public function match(string $requestMethod, string $requestPath)
+    {
+        foreach ($this->getRoutes() as $route) {
+            if ($route->match($requestMethod, $requestPath)) {
+                return $route;
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+    /**
+     * @param RouteDispatcherInterface $dispatcher
+     * @return false|mixed
+    */
+    public function dispatchRoute(RouteDispatcherInterface $dispatcher)
+    {
+        return $dispatcher->dispatch();
+    }
+
+
+
+
+
+    /**
+     * Determine if exist route given name
+     *
+     * @param string $name
+     * @return bool
+    */
+    public function has(string $name): bool
+    {
+        return $this->routes->has($name);
+    }
+
+
+
+
+
+    /**
+     * @param string $name
+     * @return void
+    */
+    public function remove(string $name)
+    {
+        $this->routes->remove($name);
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function generate(string $name, array $parameters = [])
+    {
+        if (! $route = $this->routes->getRoute($name)) {
+            return false;
+        }
+
+        return $route->generatePath($parameters);
+    }
+
+
+
+
+
+    /**
+     * Generate full route path, used for other domain
+     *
+     * @param string $name
+     * @param array $parameters
+     * @return string
+    */
+    public function url(string $name, array $parameters = []): string
+    {
+        return $this->resolvedDomain() . $this->generate($name, $parameters);
+    }
+
+
+
+
+
+    /**
+     * @inheritDoc
+     *
+     * @return Route[]
+    */
+    public function getRoutes(): array
+    {
+        return $this->routes->getRoutes();
+    }
+
+
+
+
+
+    /**
+     * @return bool
+    */
+    public function hasRoutes(): bool
+    {
+        return empty($this->getRoutes());
+    }
+
+
+
+
+
+    /**
+     * @return RouteCollection
+    */
+    public function getCollection(): RouteCollection
+    {
+        return $this->routes;
+    }
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+
+
+
+    /**
+     * @param Route $route
+     * @return void
+    */
+    public function setRoute(Route $route)
+    {
+        $this->route = $route;
+    }
+
+
+
+
+    /**
+     * Set route domain
+     *
+     * @param string $domain
+     * @return $this
+    */
+    public function domain(string $domain): self
+    {
+        $this->domain = $domain;
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * Set global patterns
+     *
+     * @param array $patterns
+     * @return void
+    */
+    public function patterns(array $patterns)
+    {
+        foreach ($patterns as $name => $regex) {
+            $this->pattern($name, $regex);
+        }
+    }
+
+
+
+
+    /**
+     * Set global pattern
+     *
+     * @param string $name
+     * @param string $regex
+     * @return $this
+    */
+    public function pattern(string $name, string $regex): self
+    {
+        $this->patterns[$name] = $regex;
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * @return string
+    */
+    protected function resolvedDomain(): string
+    {
+        return trim($this->domain, '\\/');
+    }
+
+
+
+
+    /**
+     * @param array $middlewares
+     * @return void
+    */
+    public function middlewares(array $middlewares)
+    {
+        $this->middlewares = $middlewares;
+    }
+
+
+
+    /**
+     * @return array
+    */
+    protected function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+
+
+
+
+
+    /**
+     * @inheritDoc
+    */
+    abstract public function dispatch(string $requestMethod, string $requestPath);
+
+
+
+
+
+    /**
+     * Resolve methods
+     *
+     * @param $methods
+     * @return array
+    */
+    abstract protected function resolveMethods($methods): array;
+
+
+
+
+
+    /**
+     * Resolve path
+     *
+     * @param $path
+     * @return string
+    */
+    abstract protected function resolvePath($path): string;
+
+
+
+
+
+    /**
+     * @param mixed $callback
+     * @return mixed
+    */
+    abstract protected function resolveCallback($callback);
+
+}

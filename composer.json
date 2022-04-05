@@ -1,0 +1,34 @@
+{
+  "name": "laventure/framework",
+  "description": "Core application for building web application",
+  "keywords": ["framework", "php", "laventure-framework"],
+  "type": "library",
+  "license": "MIT",
+  "readme": "",
+  "time": "",
+  "support": {
+    "issues": "https://github.com/jeandev84/laventure-framework/issues",
+    "source": "https://github.com/jeandev84/laventure-framework",
+    "wiki": "https://github.com/jeandev84/laventure-framework/wiki"
+  },
+  "autoload": {
+    "psr-4": {
+      "Laventure\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "jeandev84",
+      "email": "jeandev84@yahoo.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "symfony/var-dumper": "^5.3",
+    "ext-pdo": "*",
+    "ext-mysqli": "*",
+    "ext-json": "*",
+    "filp/whoops": "^2.14",
+    "twig/twig": "^3.3"
+  }
+}
