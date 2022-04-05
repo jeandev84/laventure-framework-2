@@ -1,29 +1,39 @@
 <?php
 namespace Laventure\Component\Routing\Resource;
 
-use Laventure\Component\Routing\Resource\Common\ResourceTrait;
+use Laventure\Component\Routing\Resource\Common\AbstractResource;
 use Laventure\Component\Routing\Resource\Contract\WebResourceInterface;
-use Laventure\Component\Routing\Router;
 
 
 /**
  * @WebResource
 */
-class WebResource implements WebResourceInterface
+class WebResource extends AbstractResource implements WebResourceInterface
 {
-
-    use ResourceTrait;
 
 
     /**
-     * @inheritDoc
+     * @return \string[][]
     */
-    public function mapRoutes(Router $router)
+    public function getParams(): array
     {
-        $this->map($router, ['GET', 's', 'list', 'list'])
-             ->map($router, ['GET', '/{id}', 'show', 'show'])
-             ->map($router, ['GET|POST', '/create', 'create', 'create'])
-             ->map($router, ['GET|POST', '/{id}/edit', 'edit', 'edit'])
-             ->map($router, ['DELETE', '/delete/{id}', 'delete', 'delete']);
+          return [
+              ['GET', 's', 'list', 'list'],
+              ['GET', '/{id}', 'show', 'show'],
+              ['GET|POST', '/create', 'create', 'create'],
+              ['GET|POST', '/{id}/edit', 'edit', 'edit'],
+              ['DELETE', '/delete/{id}', 'delete', 'delete']
+          ];
+    }
+
+
+
+
+    /**
+     * @return string[]
+    */
+    public static function getActions(): array
+    {
+         return ['list', 'show', 'create', 'edit', 'delete'];
     }
 }

@@ -359,6 +359,15 @@ abstract class InputArgv implements InputInterface
 
 
 
+    /**
+     * @param string $name
+     * @return bool
+    */
+    public function hasFlag(string $name): bool
+    {
+         return isset($this->flags[$name]);
+    }
+
 
     /**
      * @inheritDoc

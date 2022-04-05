@@ -54,11 +54,4 @@ interface Resource
     */
     public function getRoutes();
 
-
-
-
-    /**
-     * @return mixed
-    */
-    /* public function getActions(); */
 }

@@ -7,9 +7,9 @@ use Laventure\Component\Routing\Router;
 
 
 /**
- * @Resource
+ * @AbstractResource
 */
-trait ResourceTrait
+abstract class AbstractResource
 {
 
 
@@ -36,12 +36,6 @@ trait ResourceTrait
 
 
 
-     /**
-      * @var array
-     */
-     protected $actions = [];
-
-
 
      /**
       * @param string $name
@@ -55,8 +49,11 @@ trait ResourceTrait
 
 
 
+
      /**
-      * @inheritDoc
+      * Get resource name
+      *
+      * @return string
      */
      public function getName(): string
      {
@@ -67,7 +64,9 @@ trait ResourceTrait
 
 
      /**
-      * @inheritDoc
+      * Get resource controller
+      *
+      * @return string
      */
      public function getController(): string
      {
@@ -76,7 +75,10 @@ trait ResourceTrait
 
 
 
+
      /**
+      * Get resource routes
+      *
       * @return Route[]
      */
      public function getRoutes(): array
@@ -87,78 +89,90 @@ trait ResourceTrait
 
 
 
-     /**
-      * @return array
-     */
-     public function getActions(): array
-     {
-         return $this->actions;
-     }
-
-
      
      /**
+      * Map routes
+      *
       * @param Router $router
       * @return void
      */
      public function mapRoutes(Router $router)
      {
-           \trigger_error(__METHOD__. " must be implements.");
+         foreach ($this->getParams() as $params) {
+
+             list($methods, $path, $action, $name) = $params;
+
+             $this->routes[] = $router->map($methods, $this->path($path), $this->action($action), $this->name($name));
+
+         }
+
      }
 
 
 
 
      /**
-      * @param Router $router
-      * @param array $params
-      * @return $this
-     */
-     protected function map(Router $router, array $params): self
-     {
-         list($methods, $path, $action, $name) = $params;
-
-         $route = $router->map($methods, $this->path($path), $action = $this->action($action), $this->name($name));
-
-         $this->routes[]  = $route;
-         $this->actions[] = $action;
-         
-         return $this;
-     }
-
-
-
-
-
-     /**
+      * Generate route path.
+      *
       * @param string $path
       * @return string
      */
      protected function path(string $path = ''): string
      {
-         return trim($this->name, 's') . $path;
+          return trim($this->name, 's') . $path;
      }
 
 
 
+
      /**
+      * Generate route action
+      *
       * @param string $action
       * @return string
      */
      protected function action(string $action): string
      {
-         return sprintf('%s@%s', $this->controller, $action);
+          return sprintf('%s@%s', $this->controller, $action);
      }
 
 
 
 
      /**
+      * Generate route name
+      *
       * @param string $name
       * @return string
      */
      protected function name(string $name): string
      {
-        return $this->name . '.'. $name;
+         return sprintf('%s.%s', $this->name, $name);
      }
+
+
+
+
+
+
+     /**
+      * Get resource config params
+      *
+      * @return array
+     */
+     public function getParams(): array
+     {
+         return ['list', 'show', 'create', 'edit', 'destroy'];
+     }
+
+
+
+
+    /**
+     * Get resource actions
+     *
+     * @return array
+    */
+    abstract public static function getActions(): array;
+
 }

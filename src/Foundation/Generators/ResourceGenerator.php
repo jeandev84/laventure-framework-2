@@ -3,6 +3,7 @@ namespace Laventure\Foundation\Generators;
 
 
 use Laventure\Component\FileSystem\FileSystem;
+use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Component\Templating\Renderer\Renderer;
 use Laventure\Foundation\Application;
 use Laventure\Foundation\Loaders\RouteLoader;
@@ -148,6 +149,24 @@ class ResourceGenerator extends StubGenerator
 
 
 
+      /**
+       * @param string $controllerName
+       * @return void
+      */
+      public function makeWebResource(string $controllerName)
+      {
+            $this->generateController($controllerName, WebResource::getActions());
+      }
+
+
+
+
+      public function makeResourceAPI(string $controllerName)
+      {
+
+      }
+
+
 
       /**
        * @return array
@@ -175,6 +194,32 @@ class ResourceGenerator extends StubGenerator
 
 
 
+
+
+      /**
+       * @param string|null $module
+       * @return string
+      */
+      public function getControllerNamespace(string $module = null): string
+      {
+            return $this->loader->loadControllerNamespace($module);
+      }
+
+
+
+
+      /**
+       * @param string $controllerName
+       * @return string
+      */
+      public function loadControllerPath(string $controllerName): string
+      {
+          return $this->loader->generateControllerPath($controllerName);
+      }
+
+
+
+
       /**
        * @param string $controllerName
        * @param string $actionName
@@ -187,26 +232,4 @@ class ResourceGenerator extends StubGenerator
             return sprintf('%s/%s', $dir, strtolower($actionName));
       }
 
-
-
-      /**
-       * @param string|null $module
-       * @return string
-      */
-      public function getControllerNamespace(string $module = null): string
-      {
-           return $this->loader->loadControllerNamespace($module);
-      }
-
-
-
-
-      /**
-       * @param string $controllerName
-       * @return string
-      */
-      public function loadControllerPath(string $controllerName): string
-      {
-            return $this->loader->generateControllerPath($controllerName);
-      }
 }

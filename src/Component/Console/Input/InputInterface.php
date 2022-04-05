@@ -92,6 +92,14 @@ interface InputInterface
 
 
 
+    /**
+     * Get flag
+     *
+     * @param string $name
+     * @return mixed
+    */
+    public function hasFlag(string $name);
+
 
 
     /**
@@ -148,5 +156,6 @@ interface InputInterface
      * @return mixed
     */
     public function setScriptName(string $name);
+
 
 }
