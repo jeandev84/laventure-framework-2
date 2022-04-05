@@ -89,14 +89,14 @@ class EntityGenerator extends StubGenerator
 
 
 
-     /**
-      * Generate only repository
-      *
-      * @param string $entityClass
-      * @param string $module
-      * @param string $path
-      * @return bool
-     */
+      /**
+       * Generate only repository
+       *
+       * @param string $entityClass
+       * @param string $module
+       * @param string $path
+       * @return bool
+      */
       public function generateRepository(string $entityClass, string $module, string $path): bool
       {
             // make repository
