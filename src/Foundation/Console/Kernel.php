@@ -13,6 +13,7 @@ use Laventure\Foundation\Console\Commands\Database\Migration\MigrationMakeComman
 use Laventure\Foundation\Console\Commands\Database\Migration\MigrationMigrateCommand;
 use Laventure\Foundation\Console\Commands\Database\Migration\MigrationResetCommand;
 use Laventure\Foundation\Console\Commands\Database\Migration\MigrationRollbackCommand;
+use Laventure\Foundation\Console\Commands\Database\ORM\Repository\MakeEntityCommand;
 use Laventure\Foundation\Console\Commands\Database\ORM\Fixtures\FixtureLoadCommand;
 use Laventure\Foundation\Console\Commands\Database\ORM\Fixtures\FixtureMakeCommand;
 use Laventure\Foundation\Console\Commands\Dotenv\GenerateEnvCommand;
@@ -62,9 +63,10 @@ class Kernel implements ConsoleKernelContract
     protected $defaultCommands = [
        // Command
        MakeCommand::class,
+       MakeEntityCommand::class,
        // Server
        ServerRunCommand::class,
-       // Database
+       // Fixtures
        FixtureMakeCommand::class,
        FixtureLoadCommand::class,
        // Migrations

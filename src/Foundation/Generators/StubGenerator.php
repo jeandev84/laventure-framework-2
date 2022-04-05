@@ -31,7 +31,7 @@ class StubGenerator
        /**
        * @var string
        */
-       protected $generatedPath = "";
+       protected $generatedPaths = [];
 
 
 
@@ -119,7 +119,7 @@ class StubGenerator
         }
 
         if($this->fileSystem->write($targetPath, $stub)) {
-            $this->generatedPath = $targetPath;
+            $this->generatedPaths[] = $targetPath;
             return true;
         }
 
@@ -151,7 +151,34 @@ class StubGenerator
     */
     public function getGeneratedPath(): string
     {
-        return $this->generatedPath;
+        return $this->generatedPaths[0];
+    }
+
+
+
+
+    /**
+     * @return array
+    */
+    public function getGeneratedPaths(): array
+    {
+        return $this->generatedPaths;
+    }
+
+
+
+    /**
+     * @param string $entryName
+     * @return array
+    */
+    public function generateClassAndModule(string $entryName): array
+    {
+        $entryParts = explode('/', $entryName);
+        $className  = ucfirst(end($entryParts));
+        $module     = str_replace($className, '', implode('\\', $entryParts));
+        $module     = $module ? '\\'. trim(ucfirst($module), '\\') : '';
+
+        return ['className' => $className, 'moduleName' => $module];
     }
 
 }
