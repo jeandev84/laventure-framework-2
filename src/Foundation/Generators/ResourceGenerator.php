@@ -32,15 +32,6 @@ class ResourceGenerator extends StubGenerator
 
 
 
-
-      /**
-       * @var array
-      */
-      protected $generatedTemplates = [];
-
-
-
-
       /**
        * @param Application $app
        * @param FileSystem $fileSystem
@@ -71,35 +62,47 @@ class ResourceGenerator extends StubGenerator
       }
 
 
-
       /**
        * @param string $controller
        * @param array $actions
-       * @param array $resources
+       * @param bool $isResource
        * @return bool
       */
-      public function generateController(string $controller, array $actions = [], array $resources = []): bool
+      public function generateController(string $controller, array $actions = [], bool $isResource = false): bool
       {
-             $controllerParts = explode('/', $controller);
-             $controllerClass = end($controllerParts);
-             $module = str_replace($controllerClass, '', implode('\\', $controllerParts));
+             $controllerParts  = explode('/', $controller);
+             $controllerClass  = end($controllerParts);
+             $module           = str_replace($controllerClass, '', implode('\\', $controllerParts));
+             $path             = strtolower(str_replace('Controller', '', $controller));
+
+             $moduleParams = [];
+
+             if ($module) {
+                 $modulePath   = strtolower(str_replace('\\', '/', $module));
+                 $moduleParams = [
+                     'module'    => $module,
+                     'path'      => $modulePath,
+                     'name'      => str_replace('/', '.', $modulePath)
+                 ];
+             }
 
              if (empty($actions)) {
-                $actions = $this->getDefaultRouteActionParams($controllerClass);
+                 $actions = [
+                     "index" => [
+                        "methods"    => "GET",
+                        "path"       => $path = sprintf('%s/index', $path),
+                        "action"     => sprintf('%s@index', $controller),
+                        "name"       => str_replace('/', '.', $path),
+                        "viewPath"   => sprintf('%s.php', $path)
+                     ]
+                ];
              }
 
 
-             $collection = $this->getRouter()->getCollection();
-             $controllerFullNamespace = "App\\Http\\Controller\\$controllerClass";
-
-             if ($collection->hasController($controllerFullNamespace)) {
-                 return trigger_error("Controller {$controllerFullNamespace} already exist.");
-             }
-
-             $controllerStub =  $this->generateStub('routing/controller/controller', [
-                  'ControllerNamespace' => $this->getControllerNamespace($module),
-                  'ControllerClass'     => $controllerClass,
-                  'ControllerActions'   => $this->generateActions($controller, $actions, $resources)
+             $controllerStub = $this->generateStub('routing/controller/controller', [
+                 'ControllerNamespace' => $this->getControllerNamespace($module),
+                 'ControllerClass'     => $controllerClass,
+                 'ControllerActions'   => $this->generateActions($actions, $moduleParams, $isResource)
              ]);
 
 
@@ -108,66 +111,89 @@ class ResourceGenerator extends StubGenerator
 
 
 
+      /**
+       * @param string $controllerName
+       * @return string
+      */
+      protected function loadControllerPath(string $controllerName): string
+      {
+           return $this->loader->generateControllerPath($controllerName);
+      }
+
+
 
       /**
-        * Generate controller actions
-        *
-        * @param string $controller
-        * @param array $actions
-        * @param array $resourceParams
-        * @return string
+       * Generate controller actions
+       *
+       * @param array $actions
+       * @param array $moduleReferences
+       * @param bool $isResource
+       * @return string
       */
-      public function generateActions(string $controller, array $actions = [], array $resourceParams = []): string
+      protected function generateActions(array $actions, array $moduleReferences, bool $isResource): string
       {
             $actionStubs = [];
+            $routeGroups = [];
+            $module      = $moduleReferences['module'] ?? "";
 
             foreach ($actions as $actionName => $params) {
 
-                 $renderPath = $this->generateRenderPath($controller, $actionName);
+                $routeMethod  = $params["methods"];
+                $routePath    = $params['path'];
+                $routeName    = $params["name"];
+                $routeAction  = $params["action"];
+                $viewPath     = $params["viewPath"];
+                $routePath    = trim(str_replace(['index', 'list'], '', $routePath), '/');
 
-                 $routeMethod = $params[0] ?? "";
-                 $routePath   = $params[1] ?? "";
-                 $routeName   = $params[2] ?? "";
-
-                 $actionStubs[] = $this->generateStub("routing/controller/action", [
-                      "RouteMethod" => $routeMethod,
-                      "RoutePath"   => $routePath,
-                      "RouteName"   => $routeName,
-                      "ActionName"  => $actionName,
-                      "ViewPath"    => sprintf('%s.php', $renderPath)
-                 ]);
+                // Add action stub.
+                $actionStubs[] = $this->generateStub("routing/controller/action", [
+                    "RouteMethod" => $routeMethod,
+                    "RoutePath"   => $routePath,
+                    "RouteName"   => $routeName,
+                    "ActionName"  => $actionName,
+                    "Action"      => $routeAction,
+                    "ViewPath"    => $viewPath
+                ]);
 
 
-                 if (! $resourceParams) {
-                     $this->generateRoute([
-                         "methods" => $routeMethod,
-                         "path"    => $routePath,
-                         "action"  => sprintf('%s@%s', $controller, $actionName),
-                         "name"    => $this->generateRouteName($controller, $actionName)
-                     ]);
-                 }
-            }
+                // Generate route.
+                if (! $isResource) {
+                    if ($module) {
+                        $routeGroups[] = $this->generateStub('routing/routes/web_routes', [
+                            'METHODS' => $routeMethod,
+                            'PATH'    => str_replace($moduleReferences['path'], '', $routePath),
+                            'ACTION'  => str_replace([trim($moduleReferences['module'], '\\'), '/'], '', $routeAction),
+                            'NAME'    => str_replace($moduleReferences['name'], '', $routeName),
+                        ]);;
 
-            if ($resourceParams) {
-
-                $resourceName = $resourceParams["resourceName"];
-                $resourceType = $resourceParams["resourceType"];
-
-                if($this->getRouter()->hasResource($resourceName)) {
-                    return trigger_error("Resource {$resourceType} ( ". ucfirst($resourceName) ." ) already exist.");
+                    } else {
+                        $this->generateRoute([
+                            'METHODS' => $routeMethod,
+                            'PATH'    => $routePath,
+                            'ACTION'  => $routeAction,
+                            'NAME'    => $routeName
+                        ]);
+                    }
                 }
 
-                switch ($resourceType) {
-                    case "web":
-                        $this->generateRoutesResourceWeb($resourceName, $controller);
-                        break;
-                    case "api":
-                        $this->generateRoutesResourceAPI($resourceName, $controller);
-                        break;
-                }
+                // Generate template.
+                $this->generateTemplate($viewPath, $routeAction);
             }
 
-            $this->generateTemplates($controller, $actions);
+
+            if ($module) {
+                $mr = [];
+                foreach ($moduleReferences as $key => $reference) {
+                    $mr[] = "'$key' => '$reference'";
+                }
+
+                $routeGroupStub = $this->generateStub('routing/routes/group/routes', [
+                    'Routes'     => implode("\n", $routeGroups),
+                    'Attributes' => "[". implode(", ", $mr) . "]"
+                ]);
+
+                $this->append('config/routes/web.php', $routeGroupStub);
+            }
 
             return implode("\n\n", $actionStubs);
       }
@@ -175,240 +201,26 @@ class ResourceGenerator extends StubGenerator
 
 
 
-
       /**
-        * Generate templates
-        *
-        * @param string $controllerName
-        * @param array $actions
-        * @return void
-      */
-      public function generateTemplates(string $controllerName, array $actions)
-      {
-           $actions = array_keys($actions);
-
-           foreach ($actions as $actionName) {
-
-               $viewPath     = $this->generateRenderPath($controllerName, $actionName);
-               $templatePath = $this->generateTemplatePath($viewPath);
-
-               $stub = $this->generateStub('routing/template/view', [
-                    "ControllerName" => $controllerName,
-                    "ActionName"     => $actionName,
-                    "ViewPath"       => $templatePath
-               ]);
-
-               $this->append($templatePath, $stub);
-           }
-      }
-
-
-
-
-      /**
-       * @param string $controllerName
-       * @param string|null $resourceName
-       * @return bool
-      */
-      public function generateControllerResourceWeb(string $controllerName, string $resourceName = null): bool
-      {
-            if (! $resourceName) {
-                $resourceName = $this->generateName($controllerName);
-            }
-
-            $resource = new WebResource($resourceName, $controllerName);
-            $actions = $resource->getFilteredRouteParams();
-
-            return $this->generateController($controllerName, $actions, [
-                "resourceName" => $resourceName,
-                "resourceType" => "web"
-            ]);
-      }
-
-
-
-
-      /**
-        * @param string $resourceName
-        * @param string $controllerName
-        * @return bool
-      */
-      protected function generateRoutesResourceWeb(string $resourceName, string $controllerName): bool
-      {
-          $stub = $this->generateStub('routing/routes/resource/web_routes', [
-                 'ResourceName'       => $resourceName,
-                 'ResourceController' => $controllerName
-            ]);
-
-            return $this->append('config/routes/web.php', $stub);
-      }
-
-
-      /**
-       * @param string $entityClass
-       * @return bool
-      */
-      public function generateResourceWeb(string $entityClass): bool
-      {
-             $controllerName = sprintf('%sController', $entityClass);
-             $resourceName   = strtolower($entityClass);
-
-             return $this->generateControllerResourceWeb($controllerName, $resourceName);
-      }
-
-
-
-
-      /**
-       * @param string $resourceName
-       * @param string $controllerName
-       * @return bool
-      */
-      protected function generateRoutesResourceAPI(string $resourceName, string $controllerName): bool
-      {
-            $stub = $this->generateStub('routing/routes/resource/api_routes', [
-               'ResourceName'       => $resourceName,
-               'ResourceController' => $controllerName
-            ]);
-
-            return $this->append('config/routes/api.php', $stub);
-      }
-
-
-
-
-
-      /**
+       * Generate templates
+       *
        * @param string $viewPath
-       * @return array|string|string[]
+       * @param $routeAction
+       * @return bool
       */
-      public function generateTemplatePath(string $viewPath)
+      protected function generateTemplate(string $viewPath, $routeAction): bool
       {
-           $path = $this->renderer->loadTemplatePath($viewPath);
+           $viewPath = $this->renderer->loadTemplatePath($viewPath);
+           $viewPath = str_replace($this->getProjectDir(), '', $viewPath);
 
-           return str_replace($this->getProjectDir(), '', $path);
+           $stub = $this->generateStub('routing/template/view', [
+              "Action"    => str_replace('/', '\\', $routeAction),
+              "ViewPath"  => $viewPath
+           ]);
+
+           return $this->append($viewPath, $stub);
       }
 
-
-
-
-
-
-      /**
-       * @param string|null $module
-       * @return string
-      */
-      public function getControllerNamespace(string $module = null): string
-      {
-            return $this->loader->loadControllerNamespace($module);
-      }
-
-
-
-
-      /**
-       * @param string $controllerName
-       * @return string
-      */
-      public function loadControllerPath(string $controllerName): string
-      {
-          return $this->loader->generateControllerPath($controllerName);
-      }
-
-
-
-
-      /**
-       * @param string $controllerName
-       * @param string $actionName
-       * @return string
-      */
-      protected function generateRenderPath(string $controllerName, string $actionName): string
-      {
-            $dir = $this->generateName($controllerName);
-
-            return sprintf('%s/%s', $dir, strtolower($actionName));
-      }
-
-
-
-
-      /**
-       * @param string $controllerName
-       * @return string
-      */
-      protected function generateName(string $controllerName): string
-      {
-          $controllerName = str_replace(['Controller', '/'], ['', '.'], $controllerName);
-
-          return strtolower($controllerName);
-      }
-
-
-
-
-      /**
-       * @param string $controllerName
-       * @param string $actionName
-       * @return string
-      */
-      private function generateRouteURI(string $controllerName, string $actionName): string
-      {
-          $path = $this->generateName($controllerName);
-
-          if (! \in_array($actionName, ['index', 'list'])) {
-               $path .= '/'. strtolower($actionName);
-          }
-
-          return $path;
-      }
-
-
-
-      /**
-       * @param string $controllerName
-       * @param string $actionName
-       * @return string
-      */
-      private function generateRouteName(string $controllerName, string $actionName): string
-      {
-           return sprintf('%s.%s', $this->generateName($controllerName), $actionName);
-      }
-
-
-
-
-      /**
-       * @param string $controllerClass
-       * @return array[]
-      */
-      private function getDefaultRouteActionParams(string $controllerClass): array
-      {
-           return [
-              'index' => [
-                  'GET',
-                  $this->generateRouteURI($controllerClass, 'index'),
-                  $this->generateRouteName($controllerClass, 'index')
-              ]
-           ];
-      }
-
-
-
-
-      /**
-        * @param array $params
-        * @return array
-      */
-      protected function getRouteParams(array $params): array
-      {
-           return [
-               'methods' => $params[0] ?? "",
-               'path'    => $params[1] ?? "",
-               'action'  => $params[2] ?? "",
-               'name'    => $params[3] ?? ""
-           ];
-      }
 
 
 
@@ -418,14 +230,56 @@ class ResourceGenerator extends StubGenerator
       */
       protected function generateRoute(array $params): bool
       {
-            $stub = $this->generateStub('routing/routes/web_routes', [
-                'METHODS' => $params["methods"] ?? "",
-                'PATH'    => $params["path"] ?? "",
-                'ACTION'  => $params["action"] ?? "",
-                'NAME'    => $params["name"] ?? ""
-            ]);
+            extract($params);
 
-            return $this->append('config/routes/web.php', $stub);
+            $routeMethod  = $params["METHODS"];
+            $routePath    = $params["PATH"];
+            $routeAction  = $params["ACTION"];
+            $routeName    = $params["NAME"];
+
+            $stub = $this->generateStub('routing/routes/web_routes', [
+               'METHODS' => $routeMethod,
+               'PATH'    => $routePath,
+               'ACTION'  => $routeAction,
+               'NAME'    => $routeName
+           ]);
+
+          return $this->append('config/routes/web.php', $stub);
       }
 
+
+
+
+      /**
+        * @param array $params
+        * @return array
+      */
+      protected function makeActionParams(array $params): array
+      {
+           $actionParams = [];
+
+           foreach ($params as $index => $param) {
+               $actionParams[$index] = [
+                   "RouteMethod" => $param["methods"],
+                   "RoutePath"   => $param["path"],
+                   "RouteName"   => $param['name'],
+                   "ActionName"  => $param['action'],
+                   "ViewPath"    => $param['viewPath']
+               ];
+           }
+
+           return $actionParams;
+      }
+
+
+
+
+      /**
+       * @param string|null $module
+       * @return string
+      */
+      protected function getControllerNamespace(string $module = null): string
+      {
+           return $this->loader->loadControllerNamespace($module);
+      }
 }
