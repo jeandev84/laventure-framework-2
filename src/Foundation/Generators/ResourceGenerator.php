@@ -124,6 +124,8 @@ class ResourceGenerator extends StubGenerator
       }
 
 
+
+
       /**
         * Generate controller actions
         *
