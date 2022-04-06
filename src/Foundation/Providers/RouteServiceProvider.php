@@ -3,11 +3,11 @@ namespace Laventure\Foundation\Providers;
 
 
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
-use Laventure\Component\Http\Middleware\Middleware;
+use Laventure\Component\Routing\Router;
 use Laventure\Component\Routing\RouterInterface;
 use Laventure\Foundation\Loaders\RouteLoader;
 use Laventure\Foundation\Routing\DefaultController;
-use Laventure\Foundation\Routing\Router;
+use Laventure\Foundation\Routing\LaventureRouter;
 
 
 /**
@@ -42,7 +42,7 @@ class RouteServiceProvider extends ServiceProvider
     {
          $this->app->singleton(Router::class, function () {
 
-               $router = new Router($this->app, new Middleware());
+               $router = new LaventureRouter($this->app, $this->app['middleware']);
                $router->namespace('App\\Http\\Controller');
                $router->get('/', [DefaultController::class, 'index'], 'default');
                return $router;

@@ -5,10 +5,11 @@ namespace Laventure\Foundation\Http;
 use Exception;
 use Laventure\Component\Http\Request\Request;
 use Laventure\Component\Http\Response\Response;
-use Laventure\Foundation\Routing\Router;
+use Laventure\Component\Routing\Router;
 use Laventure\Contract\Http\Kernel as HttpKernelContract;
 use Laventure\Foundation\Application;
 use Laventure\Foundation\Http\Middleware\SessionStartMiddleware;
+use Laventure\Foundation\Routing\LaventureRouter;
 
 
 /**
@@ -29,7 +30,7 @@ class Kernel implements HttpKernelContract
 
 
     /**
-     * @var Router
+     * @var LaventureRouter
     */
     protected $router;
 

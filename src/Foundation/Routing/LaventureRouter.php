@@ -9,13 +9,14 @@ use Laventure\Component\Http\Response\JsonResponse;
 use Laventure\Component\Http\Response\Response;
 use Laventure\Component\Routing\Collection\Route;
 use Laventure\Component\Routing\Exception\NotFoundException;
-use Laventure\Component\Routing\Router as BaseRouter;
+use Laventure\Component\Routing\Router;
+
 
 
 /**
- * @Router
+ * @LaventureRouter
 */
-class Router extends BaseRouter
+class LaventureRouter extends Router
 {
 
        /**
