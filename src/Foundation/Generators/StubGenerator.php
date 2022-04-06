@@ -128,6 +128,20 @@ class StubGenerator
 
 
 
+
+    /**
+     * @param string $targetPath
+     * @param string $stub
+     * @return bool
+    */
+    public function append(string $targetPath, string $stub): bool
+    {
+         $this->fileSystem->root($this->getProjectDir());
+         return $this->fileSystem->write($targetPath, $stub);
+    }
+
+
+
     /**
      * @param string $fileName
      * @return bool
@@ -141,7 +155,12 @@ class StubGenerator
             return false;
         }
 
-        return $this->fileSystem->make($fileName);
+        if($this->fileSystem->make($fileName)) {
+            $this->generatedPaths[] = $fileName;
+            return true;
+        }
+
+        return false;
     }
 
 

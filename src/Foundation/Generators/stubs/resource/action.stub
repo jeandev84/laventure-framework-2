@@ -1,5 +1,7 @@
 
         /**
+         * @Route(methods="RouteMethod", path="RoutePath", name="RouteName")
+         *
          * @param Request $request
          * @return Response
         */

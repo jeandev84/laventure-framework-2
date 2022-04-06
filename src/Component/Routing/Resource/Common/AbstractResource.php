@@ -36,15 +36,47 @@ abstract class AbstractResource
 
 
 
+     /**
+      * @param string|null $name
+      * @param string|null $controller
+     */
+     public function __construct(string $name = null, string $controller = null)
+     {
+          if ($name) {
+              $this->name($name);
+          }
+
+          if ($controller) {
+              $this->controller($controller);
+          }
+     }
+
+
+
 
      /**
       * @param string $name
-      * @param string $controller
+      * @return $this
      */
-     public function __construct(string $name, string $controller)
+     public function name(string $name): self
      {
           $this->name = $name;
+
+          return $this;
+     }
+
+
+
+
+     /**
+      * @param string $controller
+      * @return $this
+     */
+     public function controller(string $controller): self
+     {
           $this->controller = $controller;
+
+          return $this;
      }
 
 
@@ -102,8 +134,7 @@ abstract class AbstractResource
 
              list($methods, $path, $action, $name) = $params;
 
-             $this->routes[] = $router->map($methods, $this->path($path), $this->action($action), $this->name($name));
-
+             $this->routes[] = $router->map($methods, $path, $action, $name);
          }
 
      }
@@ -117,7 +148,7 @@ abstract class AbstractResource
       * @param string $path
       * @return string
      */
-     protected function path(string $path = ''): string
+     protected function makeRoutePath(string $path = ''): string
      {
           return trim($this->name, 's') . $path;
      }
@@ -131,9 +162,9 @@ abstract class AbstractResource
       * @param string $action
       * @return string
      */
-     protected function action(string $action): string
+     protected function makeRouteAction(string $action): string
      {
-          return sprintf('%s@%s', $this->controller, $action);
+          return sprintf('%s@%s', $this->getController(), $action);
      }
 
 
@@ -145,13 +176,10 @@ abstract class AbstractResource
       * @param string $name
       * @return string
      */
-     protected function name(string $name): string
+     protected function makeRouteName(string $name): string
      {
-         return sprintf('%s.%s', $this->name, $name);
+         return sprintf('%s.%s', $this->getName(), $name);
      }
-
-
-
 
 
 
@@ -162,20 +190,54 @@ abstract class AbstractResource
      */
      public function getParams(): array
      {
-         return ['list', 'show', 'create', 'edit', 'destroy'];
-     }
-
+        return [
+            'list' => [
+                'GET',
+                $this->makeRoutePath(),
+                $this->makeRouteAction('list'),
+                $this->makeRouteName('list')
+            ],
+            'show' => [
+                'GET',
+                $this->makeRoutePath('/{id}'),
+                $this->makeRouteAction('show'),
+                $this->makeRouteName('show')
+            ],
+            'create' => [
+                'GET|POST',
+                $this->makeRoutePath('/create'),
+                $this->makeRouteAction('create'),
+                $this->makeRouteName('create')
+            ],
+            'edit' => [
+                'GET|POST',
+                $this->makeRoutePath('/{id}/edit'),
+                $this->makeRouteAction('edit'),
+                $this->makeRouteName('edit')
+            ],
+            'destroy' => [
+                'DELETE',
+                $this->makeRoutePath('/delete/{id}'),
+                $this->makeRouteAction('delete'),
+                $this->makeRouteName('delete')
+            ]
+        ];
+    }
 
 
 
     /**
-     * Get resource actions
-     *
      * @return array
     */
-    public static function getActions(): array
+    public function getFilteredRouteParams(): array
     {
-        return ['list', 'show', 'create', 'edit', 'delete'];
+        $filtered = [];
+
+        foreach ($this->getParams() as $index => $params) {
+            $filtered[$index] = [$params[0], $params[1], $params[3]];
+        }
+
+        return $filtered;
     }
 
 }

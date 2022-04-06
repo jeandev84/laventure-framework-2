@@ -19,6 +19,7 @@ use Laventure\Foundation\Console\Commands\Database\ORM\Fixtures\FixtureMakeComma
 use Laventure\Foundation\Console\Commands\Dotenv\GenerateEnvCommand;
 use Laventure\Foundation\Console\Commands\Dotenv\GenerateKeyCommand;
 use Laventure\Foundation\Console\Commands\Routing\Controller\MakeControllerCommand;
+use Laventure\Foundation\Console\Commands\Routing\Resource\MakeResourceCommand;
 use Laventure\Foundation\Console\Commands\Server\ServerRunCommand;
 use Laventure\Foundation\Console\Commands\Server\ServerStartCommand;
 
@@ -80,6 +81,7 @@ class Kernel implements ConsoleKernelContract
        GenerateKeyCommand::class,
        // Routing
        MakeControllerCommand::class,
+       MakeResourceCommand::class,
     ];
 
 

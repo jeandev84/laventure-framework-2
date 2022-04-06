@@ -4,9 +4,7 @@ namespace Laventure\Foundation\Http;
 
 use Exception;
 use Laventure\Component\Http\Request\Request;
-use Laventure\Component\Http\Response\JsonResponse;
 use Laventure\Component\Http\Response\Response;
-use Laventure\Component\Routing\Exception\NotFoundException;
 use Laventure\Foundation\Routing\Router;
 use Laventure\Contract\Http\Kernel as HttpKernelContract;
 use Laventure\Foundation\Application;

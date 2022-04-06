@@ -17,6 +17,7 @@ class ApiResource extends AbstractResource implements ApiResourceInterface
        */
        public function getParams(): array
        {
+            /*
             return [
               ['GET', 's', 'list', 'list'],
               ['GET', '/{id}', 'show', 'show'],
@@ -24,5 +25,8 @@ class ApiResource extends AbstractResource implements ApiResourceInterface
               ['PUT', '/{id}/edit', 'edit', 'edit'],
               ['DELETE', '/{id}/destroy', 'destroy', 'destroy']
            ];
+           */
+
+           return [];
        }
 }

@@ -5,7 +5,6 @@ namespace Laventure\Foundation\Console\Commands\Routing\Controller;
 use Laventure\Component\Console\Command\Command;
 use Laventure\Component\Console\Input\InputInterface;
 use Laventure\Component\Console\Output\OutputInterface;
-use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Foundation\Console\Commands\Routing\AbstractResourceCommand;
 
 
@@ -44,13 +43,13 @@ class MakeControllerCommand extends AbstractResourceCommand
     {
            $controllerName = $input->getArgument();
 
-           $actions = [];
-
            if ($input->hasFlag('resource')) {
-                $actions = WebResource::getActions();
+                $generated = $this->generator->generateControllerResourceWeb($controllerName);
+           } else {
+                $generated = $this->generator->generateController($controllerName);
            }
 
-           if ($this->generator->generateController($controllerName, $actions)) {
+           if ($generated) {
                $output->writeln("Controller successfully generated : ");
                $output->writeln($this->generator->getGeneratedPath());
            }
