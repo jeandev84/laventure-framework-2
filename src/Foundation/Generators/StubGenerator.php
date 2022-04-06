@@ -136,7 +136,8 @@ class StubGenerator
     */
     public function append(string $targetPath, string $stub): bool
     {
-         $this->fileSystem->root($this->getProjectDir());
+         $this->generateFile($targetPath);
+
          return $this->fileSystem->write($targetPath, $stub);
     }
 
@@ -149,11 +150,6 @@ class StubGenerator
     public function generateFile(string $fileName): bool
     {
         $this->fileSystem->root($this->getProjectDir());
-
-        if ($this->fileSystem->exists($fileName)) {
-            trigger_error("File {$fileName} already exist.");
-            return false;
-        }
 
         if($this->fileSystem->make($fileName)) {
             $this->generatedPaths[] = $fileName;

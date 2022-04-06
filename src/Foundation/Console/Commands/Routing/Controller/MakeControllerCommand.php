@@ -50,8 +50,13 @@ class MakeControllerCommand extends AbstractResourceCommand
            }
 
            if ($generated) {
-               $output->writeln("Controller successfully generated : ");
-               $output->writeln($this->generator->getGeneratedPath());
+
+               if ($generatedPaths = $this->generator->getGeneratedPaths()) {
+                   $output->writeln("Controller successfully generated : ");
+                   foreach ($generatedPaths as $generatedPath) {
+                       $output->writeln($generatedPath);
+                   }
+               }
            }
 
            return Command::SUCCESS;

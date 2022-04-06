@@ -203,6 +203,26 @@ class RouteCollection implements RouteCollectionInterface
     }
 
 
+    /**
+     * @return Route[]
+    */
+    public function getControllers(): array
+    {
+         return $this->controllers;
+    }
+
+
+
+
+    /**
+     * @param $controller
+     * @return bool
+    */
+    public function hasController($controller): bool
+    {
+         return isset($this->controllers[$controller]);
+    }
+
 
 
     /**

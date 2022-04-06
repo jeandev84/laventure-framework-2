@@ -92,6 +92,7 @@ class LaventureRouter extends Router
                  $response->setProtocolVersion($request->getProtocolVersion());
 
                  return $response;
+
             })();
        }
 

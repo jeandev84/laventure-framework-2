@@ -13,6 +13,6 @@ class Route extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'router'; // Laventure\Foundation\Routing\Router
+        return 'router';
     }
 }
