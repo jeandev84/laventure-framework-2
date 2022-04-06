@@ -97,6 +97,7 @@ class Kernel implements HttpKernelContract
     }
 
 
+
     /**
      * @param Request $request
      * @return Response

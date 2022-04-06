@@ -3,7 +3,6 @@ namespace Laventure\Foundation\Generators;
 
 
 use Laventure\Component\FileSystem\FileSystem;
-use Laventure\Component\Routing\Resource\Common\AbstractResource;
 use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Component\Templating\Renderer\Renderer;
 use Laventure\Foundation\Application;
@@ -73,13 +72,7 @@ class ResourceGenerator extends StubGenerator
              $module = str_replace($controllerClass, '', implode('\\', $controllerParts));
 
              if (empty($actions)) {
-                $actions = [
-                    'index' => [
-                         'GET',
-                         $this->generateRoutePath($controllerClass, 'index'),
-                         $this->generateRouteName($controllerClass, 'index')
-                    ]
-                ];
+                $actions = $this->getDefaultActionParams($controllerClass);
              }
 
              $controllerStub =  $this->generateStub('resource/controller', [
@@ -295,7 +288,7 @@ class ResourceGenerator extends StubGenerator
        * @param string $actionName
        * @return string
       */
-      private function generateRoutePath(string $controllerName, string $actionName): string
+      private function generateRouteURI(string $controllerName, string $actionName): string
       {
           $path = $this->generateName($controllerName);
 
@@ -316,6 +309,22 @@ class ResourceGenerator extends StubGenerator
       private function generateRouteName(string $controllerName, string $actionName): string
       {
            return sprintf('%s.%s', $this->generateName($controllerName), $actionName);
+      }
+
+
+      /**
+       * @param string $controllerClass
+       * @return array[]
+      */
+      private function getDefaultActionParams(string $controllerClass): array
+      {
+           return [
+              'index' => [
+                  'GET',
+                  $this->generateRouteURI($controllerClass, 'index'),
+                  $this->generateRouteName($controllerClass, 'index')
+              ]
+           ];
       }
 
 }
