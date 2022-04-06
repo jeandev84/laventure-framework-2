@@ -109,23 +109,6 @@ class ResourceGenerator extends StubGenerator
 
 
 
-
-      /**
-       * @param string $controller
-       * @param array $actions
-       * @param array $params
-       * @return void
-      */
-      public function generateControllerAndRoute(string $controller, array $actions = [], array $params = [])
-      {
-             if ($this->generateController($controller, $actions)) {
-
-             }
-      }
-
-
-
-
       /**
         * Generate controller actions
         *
@@ -169,6 +152,10 @@ class ResourceGenerator extends StubGenerator
 
                 $resourceName = $resourceParams["resourceName"];
                 $resourceType = $resourceParams["resourceType"];
+
+                if($this->getRouter()->hasResource($resourceName)) {
+                    return trigger_error("Resource {$resourceType} ( ". ucfirst($resourceName) ." ) already exist.");
+                }
 
                 switch ($resourceType) {
                     case "web":
@@ -232,10 +219,6 @@ class ResourceGenerator extends StubGenerator
             $resource = new WebResource($resourceName, $controllerName);
             $actions = $resource->getFilteredRouteParams();
 
-            if($this->getRouter()->hasResource($resourceName)) {
-                 return trigger_error("Resource {$resourceName} already exist.");
-            }
-
             return $this->generateController($controllerName, $actions, [
                 "resourceName" => $resourceName,
                 "resourceType" => "web"
@@ -252,7 +235,7 @@ class ResourceGenerator extends StubGenerator
       */
       protected function generateRoutesResourceWeb(string $resourceName, string $controllerName): bool
       {
-            $stub = $this->generateStub('routing/routes/resource/web_routes', [
+          $stub = $this->generateStub('routing/routes/resource/web_routes', [
                  'ResourceName'       => $resourceName,
                  'ResourceController' => $controllerName
             ]);
