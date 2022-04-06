@@ -89,6 +89,8 @@ class ResourceGenerator extends StubGenerator
              ]);
 
 
+             $this->generateTemplates($controller, array_keys($actions));
+
              return $this->writeTo($this->loadControllerPath($controller), $controllerStub);
       }
 
@@ -108,9 +110,9 @@ class ResourceGenerator extends StubGenerator
 
                  $renderPath = $this->generateRenderPath($controller, $actionName);
 
-                 $routeMethod = $params[0];
-                 $routePath   = $params[1];
-                 $routeName   = $params[2];
+                 $routeMethod = $params[0] ?? "";
+                 $routePath   = $params[1] ?? "";
+                 $routeName   = $params[2] ?? "";
 
                  $actionStubs[] = $this->generateStub("resource/action", [
                       "RouteMethod" => $routeMethod,
@@ -137,7 +139,7 @@ class ResourceGenerator extends StubGenerator
       */
       public function generateTemplates(string $controllerName, array $actions)
       {
-           foreach (array_keys($actions) as $actionName) {
+           foreach ($actions as $actionName) {
                $viewPath     = $this->generateRenderPath($controllerName, $actionName);
                $templatePath = $this->generateTemplatePath($viewPath);
                $this->generateFile($templatePath);
