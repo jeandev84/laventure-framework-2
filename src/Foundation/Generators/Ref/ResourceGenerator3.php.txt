@@ -123,9 +123,7 @@ class ResourceGenerator extends StubGenerator
 
         $parts = $this->makeControllerParts($controller);
 
-        $joinedParts = implode('/', $parts);
-
-        return str_replace([$controllerClass, '/'], ['', '\\\\'], $joinedParts);
+        return str_replace($controllerClass, '', implode('\\', $parts));
     }
 
 
@@ -198,7 +196,7 @@ class ResourceGenerator extends StubGenerator
     */
     protected function makeModuleName(string $module): string
     {
-         return strtolower(str_replace('\\', '', $module)) . '.';
+         return strtolower(str_replace('\\', '.', $module));
     }
 
 
@@ -210,7 +208,7 @@ class ResourceGenerator extends StubGenerator
     */
     protected function makeModulePath(string $module): string
     {
-         return strtolower(str_replace('\\', '', $module)) . '/';
+         return strtolower(str_replace('\\', '/', $module));
     }
 
 
@@ -256,9 +254,9 @@ class ResourceGenerator extends StubGenerator
     protected function makeModuleAttributes(string $module): array
     {
           return [
-              "module"   => sprintf('%s\\\\', trim($module, '\\')),
-              "prefix"   => $this->makeModulePath($module),
-              "name"     => $this->makeModuleName($module),
+              "module" => $module,
+              "name"   => $this->makeModuleName($module),
+              "path"   => $this->makeModulePath($module)
           ];
     }
 
@@ -274,9 +272,18 @@ class ResourceGenerator extends StubGenerator
          $controllerClass  = $this->getControllerClass($controller);
          $module           = $this->getModule($controller);
 
+         /*
+         $moduleReferences = [];
+         if($module) {
+              $moduleReferences = $this->makeModuleReferences($module);
+         }
+         */
+
          if (empty($actions)) {
              $actions = $this->makeDefaultActionParams($controller);
          }
+
+         //dd($actions);
 
          $controllerStub = $this->generateStub('routing/controller/controller', [
             'ControllerNamespace' => $this->getControllerNamespace($module),
@@ -314,31 +321,36 @@ class ResourceGenerator extends StubGenerator
 
         foreach ($actions as $action => $params) {
 
-            if (! $isResource && $module) {
-                $stubRouteGroup[] = $this->generateRouteStub($params, $module);
+            /*
+             $routeMethod  = $params["methods"];
+             $routePath    = $params['path'];
+             $routeName    = $params["name"];
+             $routeAction  = $params["action"];
+             $viewPath     = $params["viewPath"];
+            */
+
+            if (! $isResource) {
+                if ($module) {
+                    $stubRouteGroup[] = $this->generateRouteStub($params, $module);
+                } else {
+                    $this->generateWebRoute($params);
+                }
             }
 
+            // Add action stub.
             $actionStubs[] = $this->generateActionStub($action, $params);
         }
 
 
-        if (! $isResource) {
-
-            if ($module) {
-                $this->generateRouteGroup([
-                    'attributes' => $this->makeModuleAttributes($module),
-                    'routes'     => $stubRouteGroup
-                ]);
-            } else {
-                foreach ($actions as $params) {
-                    $this->generateWebRoute($params);
-                }
-            }
+        if (! $isResource && $module) {
+            $this->generateRouteGroup([
+                'attributes' => $this->makeModuleAttributes($module),
+                'routes'     => $stubRouteGroup
+            ]);
         }
 
         return implode("\n\n", $actionStubs);
     }
-
 
 
 
@@ -352,14 +364,11 @@ class ResourceGenerator extends StubGenerator
         $modulePath = $this->makeModulePath($module);
         $moduleName = $this->makeModuleName($module);
 
-        $path = str_replace($modulePath, '', $params['path']);
-        $name = str_replace($moduleName, '', $params['name']);
-
         return $this->generateStub('routing/routes/types/map', [
             'METHODS' => $params['methods'],
-            'PATH'    => $path,
+            'PATH'    => str_replace($modulePath, '', $params['path']),
             'ACTION'  => $params['action'],
-            'NAME'    => $name,
+            'NAME'    => str_replace($moduleName, '', $params['name']),
         ]);
     }
 
@@ -376,7 +385,7 @@ class ResourceGenerator extends StubGenerator
         $mr = [];
 
         foreach ($params['attributes'] as $key => $value) {
-            $mr[] = sprintf('"%s" => "%s"', $key, $value);
+            $mr[] = "'$key' => '$value'";
         }
 
         $attributes = "[". implode(", ", $mr) . "]";
@@ -552,7 +561,7 @@ class ResourceGenerator extends StubGenerator
     */
     public function generateWebRoute(array $params): bool
     {
-         return $this->generateRoute($params, 'web');
+        return $this->generateRoute($params, 'web');
     }
 
 

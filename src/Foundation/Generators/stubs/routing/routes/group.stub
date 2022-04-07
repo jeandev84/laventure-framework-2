@@ -1,0 +1,6 @@
+
+$MODULE = ATTRIBUTES;
+
+Route::group(function () {
+     ROUTES
+}, $MODULE);

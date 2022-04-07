@@ -336,7 +336,7 @@ class ResourceGenerator extends StubGenerator
      * @param string $resourceName
      * @param string $controllerName
      * @return bool
-     */
+    */
     protected function generateRoutesResourceAPI(string $resourceName, string $controllerName): bool
     {
         $stub = $this->generateStub('routing/routes/resource/api_routes', [

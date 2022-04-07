@@ -130,11 +130,14 @@ abstract class AbstractResource
      */
      public function mapRoutes(Router $router)
      {
-         foreach ($this->getParams() as $params) {
+         foreach ($this->getParams() as $param) {
 
-             list($methods, $path, $action, $name) = $params;
-
-             $this->routes[] = $router->map($methods, $path, $action, $name);
+             $this->routes[] = $router->map(
+                 $param['methods'],
+                 $param['path'],
+                 $param['action'],
+                 $param['name']
+             );
          }
 
      }
@@ -183,6 +186,8 @@ abstract class AbstractResource
 
 
 
+
+
      /**
       * Get resource config params
       *
@@ -192,37 +197,44 @@ abstract class AbstractResource
      {
         return [
             'list' => [
-                'GET',
-                $this->makeRoutePath(),
-                $this->makeRouteAction('list'),
-                $this->makeRouteName('list')
+                'methods'  => 'GET',
+                'path'     => $this->makeRoutePath(),
+                'action'   => $this->makeRouteAction('list'),
+                'name'     => $this->makeRouteName('list'),
+                'viewPath' => ''
             ],
             'show' => [
-                'GET',
-                $this->makeRoutePath('/{id}'),
-                $this->makeRouteAction('show'),
-                $this->makeRouteName('show')
+                'methods'  => 'GET',
+                'path'     => $this->makeRoutePath('/{id}'),
+                'action'   => $this->makeRouteAction('show'),
+                'name'     => $this->makeRouteName('show'),
+                'viewPath' => ''
             ],
             'create' => [
-                'GET|POST',
-                $this->makeRoutePath('/create'),
-                $this->makeRouteAction('create'),
-                $this->makeRouteName('create')
+                'methods'  => 'GET|POST',
+                'path'     => $this->makeRoutePath('/create'),
+                'action'   => $this->makeRouteAction('create'),
+                'name'     => $this->makeRouteName('create'),
+                'viewPath' => ''
             ],
             'edit' => [
-                'GET|POST',
-                $this->makeRoutePath('/{id}/edit'),
-                $this->makeRouteAction('edit'),
-                $this->makeRouteName('edit')
+                'methods'  => 'GET|POST',
+                'path'     => $this->makeRoutePath('/{id}/edit'),
+                'action'   => $this->makeRouteAction('edit'),
+                'name'     => $this->makeRouteName('edit'),
+                'viewPath' => ''
             ],
             'destroy' => [
-                'DELETE',
-                $this->makeRoutePath('/delete/{id}'),
-                $this->makeRouteAction('delete'),
-                $this->makeRouteName('delete')
+                'methods'  => 'DELETE',
+                'path'     => $this->makeRoutePath('/delete/{id}'),
+                'action'   => $this->makeRouteAction('delete'),
+                'name'     => $this->makeRouteName('delete'),
+                'viewPath' => ''
             ]
         ];
     }
+
+
 
 
 
@@ -238,6 +250,13 @@ abstract class AbstractResource
         }
 
         return $filtered;
+    }
+
+
+
+    public function makeViewPath()
+    {
+
     }
 
 }

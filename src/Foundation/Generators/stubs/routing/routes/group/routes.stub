@@ -1,3 +1,0 @@
-Route::group(function () {
-     Routes
-}, Attributes);

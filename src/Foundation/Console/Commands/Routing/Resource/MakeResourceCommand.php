@@ -47,7 +47,7 @@ class MakeResourceCommand extends AbstractResourceCommand
            if ($input->hasFlag('api')) {
                $generated = false;
            }else {
-               $generated = $this->generator->generateResourceWeb($entityClass);
+               $generated = $this->generator->generateResource($entityClass);
            }
 
 
