@@ -273,6 +273,18 @@ class Router implements RouterInterface
 
 
 
+    /**
+     * Determine has controller in collection ?
+     *
+     * @param string $controller
+     * @return bool
+    */
+    public function hasController(string $controller): bool
+    {
+         return $this->routes->hasController($controller);
+    }
+
+
 
     /**
      * @param string $name

@@ -380,19 +380,24 @@ class ResourceGenerator extends StubGenerator
           $actions = array_values($actions);
 
           foreach ($actions as $params) {
-              if ($module) {
+              if (! $isResource && $module) {
                   $stubRouteGroup[] = $this->generateRouteStub($params, $module);
-              }else {
-                  $this->generateWebRoute($params);
               }
           }
 
-          if ($module) {
-              $this->generateRouteGroup([
-                  'attributes' => $this->makeModuleAttributes($module),
-                  'routes'     => $stubRouteGroup
-              ]);
-          }
+          if (! $isResource) {
+
+            if ($module) {
+                $this->generateRouteGroup([
+                    'attributes' => $this->makeModuleAttributes($module),
+                    'routes'     => $stubRouteGroup
+                ]);
+            } else {
+                foreach ($actions as $params) {
+                    $this->generateWebRoute($params);
+                }
+            }
+        }
     }
 
 

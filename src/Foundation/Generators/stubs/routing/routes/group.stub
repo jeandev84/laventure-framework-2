@@ -1,6 +1,6 @@
 
-$MODULE = ATTRIBUTES;
+$VARIABLE = ATTRIBUTES;
 
 Route::group(function () {
      ROUTES
-}, $MODULE);
+}, $VARIABLE);
