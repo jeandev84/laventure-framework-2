@@ -101,15 +101,15 @@ class StubGenerator
     }
 
 
-
     /**
      * Write content stub to the target path
      *
      * @param string $targetPath
      * @param string $stub
+     * @param bool $append
      * @return bool
     */
-    public function writeTo(string $targetPath, string $stub): bool
+    public function writeTo(string $targetPath, string $stub, bool $append = true): bool
     {
         $this->fileSystem->root($this->getProjectDir());
 
@@ -118,7 +118,7 @@ class StubGenerator
              return false;
         }
 
-        if($this->fileSystem->write($targetPath, $stub)) {
+        if($this->fileSystem->write($targetPath, $stub, $append)) {
             $this->generatedPaths[] = $targetPath;
             return true;
         }
@@ -128,17 +128,17 @@ class StubGenerator
 
 
 
-
     /**
      * @param string $targetPath
      * @param string $stub
+     * @param bool $append
      * @return bool
     */
-    public function append(string $targetPath, string $stub): bool
+    public function append(string $targetPath, string $stub, bool $append = true): bool
     {
          $this->generateFile($targetPath);
 
-         return $this->fileSystem->write($targetPath, $stub);
+         return $this->fileSystem->write($targetPath, $stub, $append);
     }
 
 

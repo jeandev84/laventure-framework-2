@@ -445,7 +445,6 @@ class ResourceGenerator extends StubGenerator
             'ROUTES'       => implode("\n", $params['routes'])
         ]);
 
-        // dd($stub);
 
         return $this->append("config/routes/{$type}.php", $stub);
     }
@@ -654,7 +653,7 @@ class ResourceGenerator extends StubGenerator
             "ViewPath"  => $viewPath
         ]);
 
-        return $this->append($viewPath, $stub);
+        return $this->append($viewPath, $stub, false);
     }
 
 }

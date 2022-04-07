@@ -97,11 +97,12 @@ class FileSystem extends FileLocator
       /**
        * @param string $filename
        * @param string $content
+       * @param bool $append
        * @return bool
       */
-      public function write(string $filename, string $content): bool
+      public function write(string $filename, string $content, bool $append = true): bool
       {
-           return $this->file($filename)->write($content);
+           return $this->file($filename)->write($content, $append);
       }
 
 

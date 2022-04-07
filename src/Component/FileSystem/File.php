@@ -270,17 +270,16 @@ class File
     }
 
 
-
-
     /**
      * @param $content
+     * @param bool $append
      * @return bool|false
     */
-    public function write($content): bool
+    public function write($content, bool $append = true): bool
     {
          $this->make();
 
-         return $this->writer->write($this->path, $content);
+         return $this->writer->write($this->path, $content, $append);
     }
 
 
