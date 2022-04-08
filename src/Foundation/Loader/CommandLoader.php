@@ -6,7 +6,7 @@ use Laventure\Component\Console\Command\Command;
 use Laventure\Component\Console\Console;
 use Laventure\Component\Container\Container;
 use Laventure\Component\FileSystem\FileSystem;
-use Laventure\Foundation\Loader;
+use Laventure\Foundation\Loader\Common\Loader;
 
 
 /**

@@ -3,7 +3,7 @@ namespace Laventure\Foundation\Loader;
 
 
 use Laventure\Component\Container\Container;
-use Laventure\Foundation\Loader;
+use Laventure\Foundation\Loader\Common\Loader;
 
 
 /**

@@ -2,12 +2,10 @@
 namespace Laventure\Foundation\Loader;
 
 use Laventure\Component\Container\Container;
-use Laventure\Component\Database\ORM\Manager\EntityManager;
 use Laventure\Component\Database\ORM\Manager\Fixtures\Contract\Fixture;
 use Laventure\Component\Database\ORM\Manager\Fixtures\FixtureManager;
 use Laventure\Component\FileSystem\FileSystem;
-use Laventure\Foundation\Loader;
-
+use Laventure\Foundation\Loader\Common\Loader;
 
 
 /**

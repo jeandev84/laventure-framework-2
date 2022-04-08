@@ -6,7 +6,7 @@ use Laventure\Component\Container\Container;
 use Laventure\Component\Database\Migration\Migration;
 use Laventure\Component\Database\Migration\Migrator;
 use Laventure\Component\FileSystem\FileSystem;
-use Laventure\Foundation\Loader;
+use Laventure\Foundation\Loader\Common\Loader;
 
 
 /**

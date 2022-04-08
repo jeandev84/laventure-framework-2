@@ -5,7 +5,7 @@ namespace Laventure\Foundation\Loader;
 use Laventure\Component\Container\Container;
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Component\Routing\Router;
-use Laventure\Foundation\Loader;
+use Laventure\Foundation\Loader\Common\Loader;
 
 
 /**

@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Foundation;
+namespace Laventure\Foundation\Loader\Common;
 
 
 use Laventure\Component\Container\Container;
