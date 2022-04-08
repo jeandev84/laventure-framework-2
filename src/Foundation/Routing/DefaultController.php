@@ -13,11 +13,21 @@ class DefaultController extends Controller
 {
 
        /**
+        * @var bool
+       */
+       protected $layout = false;
+
+
+
+       /**
         * DefaultController constructor
        */
        public function __construct(Renderer $renderer)
        {
-            $renderer->resourcePath(__DIR__.'/Resources/views');
+            $renderer->resourcePath(__DIR__.'/Resources/views')
+                     ->cache(false)
+                     ->compress(false)
+            ;
        }
 
 

@@ -68,7 +68,7 @@ abstract class Controller implements ContainerAwareInterface
              $this->container->instance("@layout", $this->layout);
          }
 
-         return $this->get("@layout");
+         return $this->layout;
     }
 
 

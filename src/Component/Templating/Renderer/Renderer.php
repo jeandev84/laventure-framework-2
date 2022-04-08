@@ -218,7 +218,9 @@ class Renderer implements RendererInterface, RenderLayoutInterface
             $content = $this->renderLayout($content);
         }
 
-        $content = $this->renderCache($template, $content, $arguments);
+        if ($this->cached) {
+            $content = $this->renderCache($template, $content, $arguments);
+        }
 
         if ($this->compressed) {
             $content = $this->compressor->compress($content);
@@ -241,7 +243,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
         extract($arguments, EXTR_SKIP);
 
         if (! is_file($template)) {
-            trigger_error("Template file '{$template}' does not exist.");
+             return false;
         }
 
         ob_start();
@@ -276,10 +278,6 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     */
     public function renderCache($template, $content, array $arguments = [])
     {
-        if (! $this->cached) {
-            return $content;
-        }
-
         $content = $this->renderTags->replaceTags($content);
 
         if(! $this->cacheManager->cache($template, $content)) {
