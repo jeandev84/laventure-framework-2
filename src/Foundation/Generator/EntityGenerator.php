@@ -1,11 +1,11 @@
 <?php
-namespace Laventure\Foundation\Generators;
+namespace Laventure\Foundation\Generator;
 
 
 
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
-use Laventure\Foundation\Loaders\EntityLoader;
+use Laventure\Foundation\Loader\EntityLoader;
 
 
 /**

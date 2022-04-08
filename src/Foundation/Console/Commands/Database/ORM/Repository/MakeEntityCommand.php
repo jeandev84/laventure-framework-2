@@ -5,7 +5,7 @@ namespace Laventure\Foundation\Console\Commands\Database\ORM\Repository;
 use Laventure\Component\Console\Command\Command;
 use Laventure\Component\Console\Input\InputInterface;
 use Laventure\Component\Console\Output\OutputInterface;
-use Laventure\Foundation\Generators\EntityGenerator;
+use Laventure\Foundation\Generator\EntityGenerator;
 
 
 

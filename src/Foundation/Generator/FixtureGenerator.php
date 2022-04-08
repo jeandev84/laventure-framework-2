@@ -1,11 +1,11 @@
 <?php
-namespace Laventure\Foundation\Generators;
+namespace Laventure\Foundation\Generator;
 
 
 
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
-use Laventure\Foundation\Loaders\FixtureLoader;
+use Laventure\Foundation\Loader\FixtureLoader;
 
 
 

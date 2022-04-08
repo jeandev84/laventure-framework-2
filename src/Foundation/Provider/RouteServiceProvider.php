@@ -1,11 +1,11 @@
 <?php
-namespace Laventure\Foundation\Providers;
+namespace Laventure\Foundation\Provider;
 
 
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
 use Laventure\Component\Routing\Router;
 use Laventure\Component\Routing\RouterInterface;
-use Laventure\Foundation\Loaders\RouteLoader;
+use Laventure\Foundation\Loader\RouteLoader;
 use Laventure\Foundation\Routing\DefaultController;
 use Laventure\Foundation\Routing\LaventureRouter;
 

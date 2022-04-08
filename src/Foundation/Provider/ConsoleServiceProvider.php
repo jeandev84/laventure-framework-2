@@ -1,12 +1,12 @@
 <?php
-namespace Laventure\Foundation\Providers;
+namespace Laventure\Foundation\Provider;
 
 
 use Laventure\Component\Console\Console;
 use Laventure\Component\Console\ConsoleInterface;
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
 use Laventure\Foundation\Console\Application;
-use Laventure\Foundation\Loaders\CommandLoader;
+use Laventure\Foundation\Loader\CommandLoader;
 
 
 /**

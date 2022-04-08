@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Foundation\Loaders;
+namespace Laventure\Foundation\Loader;
 
 
 use Laventure\Component\Console\Command\Command;

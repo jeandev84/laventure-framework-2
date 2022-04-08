@@ -1,10 +1,10 @@
 <?php
-namespace Laventure\Foundation\Generators;
+namespace Laventure\Foundation\Generator;
 
 
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
-use Laventure\Foundation\Loaders\CommandLoader;
+use Laventure\Foundation\Loader\CommandLoader;
 
 /**
  * @CommandGenerator

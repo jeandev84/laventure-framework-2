@@ -6,7 +6,7 @@ use Laventure\Component\Database\Migration\Migrator;
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
 use Laventure\Foundation\Console\Commands\BaseCommand;
-use Laventure\Foundation\Generators\MigrationGenerator;
+use Laventure\Foundation\Generator\MigrationGenerator;
 
 
 /**

@@ -7,18 +7,18 @@ use Laventure\Component\Container\Contract\ContainerInterface;
 use Laventure\Component\Http\Request\Request;
 use Laventure\Component\Http\Response\Response;
 use Laventure\Contract\Application\ApplicationInterface;
-use Laventure\Foundation\Providers\ApplicationServiceProvider;
-use Laventure\Foundation\Providers\AssetServiceProvider;
-use Laventure\Foundation\Providers\ConfigurationServiceProvider;
-use Laventure\Foundation\Providers\ConsoleServiceProvider;
-use Laventure\Foundation\Providers\DatabaseServiceProvider;
-use Laventure\Foundation\Providers\EventDispatcherServiceProvider;
-use Laventure\Foundation\Providers\FileSystemServiceProvider;
-use Laventure\Foundation\Providers\MiddlewareServiceProvider;
-use Laventure\Foundation\Providers\MigrationServiceProvider;
-use Laventure\Foundation\Providers\RouteServiceProvider;
-use Laventure\Foundation\Providers\UrlGeneratorServiceProvider;
-use Laventure\Foundation\Providers\ViewServiceProvider;
+use Laventure\Foundation\Provider\ApplicationServiceProvider;
+use Laventure\Foundation\Provider\AssetServiceProvider;
+use Laventure\Foundation\Provider\ConfigurationServiceProvider;
+use Laventure\Foundation\Provider\ConsoleServiceProvider;
+use Laventure\Foundation\Provider\DatabaseServiceProvider;
+use Laventure\Foundation\Provider\EventDispatcherServiceProvider;
+use Laventure\Foundation\Provider\FileSystemServiceProvider;
+use Laventure\Foundation\Provider\MiddlewareServiceProvider;
+use Laventure\Foundation\Provider\MigrationServiceProvider;
+use Laventure\Foundation\Provider\RouteServiceProvider;
+use Laventure\Foundation\Provider\UrlGeneratorServiceProvider;
+use Laventure\Foundation\Provider\ViewServiceProvider;
 
 
 /**

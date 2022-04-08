@@ -5,7 +5,7 @@ namespace Laventure\Foundation\Console\Commands\Command;
 use Laventure\Component\Console\Command\Command;
 use Laventure\Component\Console\Input\InputInterface;
 use Laventure\Component\Console\Output\OutputInterface;
-use Laventure\Foundation\Generators\CommandGenerator;
+use Laventure\Foundation\Generator\CommandGenerator;
 
 
 /**

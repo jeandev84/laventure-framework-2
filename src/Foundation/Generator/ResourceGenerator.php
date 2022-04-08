@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Foundation\Generators;
+namespace Laventure\Foundation\Generator;
 
 
 use Laventure\Component\FileSystem\FileSystem;
@@ -8,7 +8,7 @@ use Laventure\Component\Routing\Resource\Common\AbstractResource;
 use Laventure\Component\Routing\Resource\WebResource;
 use Laventure\Component\Templating\Renderer\Renderer;
 use Laventure\Foundation\Application;
-use Laventure\Foundation\Loaders\RouteLoader;
+use Laventure\Foundation\Loader\RouteLoader;
 use Laventure\Component\Routing\Router;
 
 

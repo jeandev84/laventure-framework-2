@@ -5,7 +5,7 @@ namespace Laventure\Foundation\Console\Commands\Routing;
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
 use Laventure\Foundation\Console\Commands\BaseCommand;
-use Laventure\Foundation\Generators\ResourceGenerator;
+use Laventure\Foundation\Generator\ResourceGenerator;
 
 
 /**

@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Foundation\Providers;
+namespace Laventure\Foundation\Provider;
 
 
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
@@ -11,8 +11,8 @@ use Laventure\Component\Database\ORM\Manager\Contract\ObjectManager;
 use Laventure\Component\Database\ORM\Manager\EntityManager;
 use Laventure\Component\Database\ORM\Manager\Fixtures\FixtureManager;
 use Laventure\Component\Database\Schema\Schema;
-use Laventure\Foundation\Loaders\EntityLoader;
-use Laventure\Foundation\Loaders\FixtureLoader;
+use Laventure\Foundation\Loader\EntityLoader;
+use Laventure\Foundation\Loader\FixtureLoader;
 use Laventure\Foundation\Service\ORM\EntityManagerService;
 
 

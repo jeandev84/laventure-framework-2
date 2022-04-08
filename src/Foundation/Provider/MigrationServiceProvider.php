@@ -1,10 +1,10 @@
 <?php
-namespace Laventure\Foundation\Providers;
+namespace Laventure\Foundation\Provider;
 
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
 use Laventure\Component\Database\Migration\Contract\MigratorInterface;
 use Laventure\Component\Database\Migration\Migrator;
-use Laventure\Foundation\Loaders\MigrationLoader;
+use Laventure\Foundation\Loader\MigrationLoader;
 
 
 /**

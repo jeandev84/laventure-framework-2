@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Foundation\Loaders;
+namespace Laventure\Foundation\Loader;
 
 use Laventure\Component\Container\Container;
 use Laventure\Component\Database\ORM\Manager\EntityManager;

@@ -8,7 +8,7 @@ use Laventure\Component\Console\Output\OutputInterface;
 use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Foundation\Application;
 use Laventure\Foundation\Console\Commands\BaseCommand;
-use Laventure\Foundation\Generators\FixtureGenerator;
+use Laventure\Foundation\Generator\FixtureGenerator;
 
 
 /**

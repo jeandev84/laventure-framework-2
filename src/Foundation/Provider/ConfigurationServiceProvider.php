@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Foundation\Providers;
+namespace Laventure\Foundation\Provider;
 
 
 use Laventure\Component\Config\Config;
