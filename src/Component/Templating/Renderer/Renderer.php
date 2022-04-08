@@ -100,7 +100,6 @@ class Renderer implements RendererInterface, RenderLayoutInterface
               $this->resourcePath($resource);
           }
 
-
           $this->cacheManager = new RenderCacheManager($resource);
           $this->compressor   = new RenderCompressor();
           $this->renderTags   = new RenderTags();
