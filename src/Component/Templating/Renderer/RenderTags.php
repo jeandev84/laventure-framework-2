@@ -49,7 +49,6 @@ class RenderTags
     public function getContentTags(): array
     {
         return [
-            ':'         =>  ": ?>",
             '{%'        =>  "<?php ",
             '%}'        =>  ";?>",
             '{{'        => "<?=",
