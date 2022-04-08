@@ -243,7 +243,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
         extract($arguments, EXTR_SKIP);
 
         if (! is_file($template)) {
-             return false;
+            trigger_error("View file : {$template} does not exist.". __METHOD__);
         }
 
         ob_start();

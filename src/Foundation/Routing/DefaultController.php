@@ -38,6 +38,6 @@ class DefaultController extends Controller
        */
        public function index(): Response
        {
-            return $this->render('default/index.php');
+            return $this->render('welcome.php');
        }
 }
