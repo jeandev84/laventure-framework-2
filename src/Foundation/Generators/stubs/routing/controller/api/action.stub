@@ -8,9 +8,9 @@
         public function ActionName(Request $request): Response
         {
                return $this->json([
-                    'methods' => RouteMethod
-                    'path'    => RoutePath,
-                    'name'    => RouteName,
-                    'action'  => ActionName
+                    "methods" => "RouteMethod",
+                    "path"    => "RoutePath",
+                    "name"    => "RouteName",
+                    "action"  => "ActionName"
                ]);
         }

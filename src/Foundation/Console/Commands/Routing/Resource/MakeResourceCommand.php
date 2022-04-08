@@ -45,14 +45,13 @@ class MakeResourceCommand extends AbstractResourceCommand
            $entityClass = $input->getArgument();
 
            if ($input->hasFlag('api')) {
-               $generated = false;
+               $generated = $this->generator->generateResourceAPI($entityClass);
            }else {
-               $generated = $this->generator->generateResource($entityClass);
+               $generated = $this->generator->generateResourceWeb($entityClass);
            }
 
-
            if ($generated) {
-               $output->writeln("Controller successfully generated : ");
+               $output->writeln("Resource entity {$entityClass} successfully generated : ");
                foreach ($this->generator->getGeneratedPaths() as $path) {
                    $output->writeln($path);
                }

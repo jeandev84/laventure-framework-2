@@ -96,6 +96,14 @@ class Router implements RouterInterface
 
 
 
+    /**
+     * @var string
+    */
+    protected $controllerSuffix = 'Controller';
+
+
+
+
 
     /**
      * Route middlewares
@@ -161,13 +169,23 @@ class Router implements RouterInterface
     */
     public function __construct(RouteDispatcherInterface $dispatcher = null)
     {
-         $this->factory        = new Factory();
+         $this->factory        = new Factory($this->controllerSuffix);
          $this->routes         = new RouteCollection();
          $this->resolver       = new Resolver();
          $this->dispatcher     = $dispatcher ?? new RouteDispatcher();
     }
 
 
+
+
+
+    /**
+     * @return string
+    */
+    public function getControllerSuffix(): string
+    {
+         return $this->controllerSuffix;
+    }
 
 
     /**
@@ -800,6 +818,9 @@ class Router implements RouterInterface
     {
         return $this->dispatcher->dispatchRoute($route);
     }
+
+
+
 
 
     /**

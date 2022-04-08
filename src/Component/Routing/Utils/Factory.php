@@ -20,6 +20,25 @@ class Factory
 
 
     /**
+     * @var string
+    */
+    protected $controllerSuffix;
+
+
+
+    /**
+     * @param string|null $controllerSuffix
+    */
+    public function __construct(string $controllerSuffix = '')
+    {
+         if ($controllerSuffix) {
+             $this->controllerSuffix = $controllerSuffix;
+         }
+    }
+
+
+
+    /**
      * @param $methods
      * @param string $path
      * @param $action
@@ -59,7 +78,7 @@ class Factory
     */
     public function createResource(string $name, string $controller): WebResourceInterface
     {
-          return new WebResource($name, $controller);
+          return new WebResource($name, $controller, $this->controllerSuffix);
     }
 
 
@@ -72,6 +91,6 @@ class Factory
     */
     public function createResourceAPI(string $name, string $controller): ApiResourceInterface
     {
-        return new ApiResource($name, $controller);
+        return new ApiResource($name, $controller, $this->controllerSuffix);
     }
 }

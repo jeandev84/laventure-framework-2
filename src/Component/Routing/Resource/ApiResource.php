@@ -20,33 +20,33 @@ class ApiResource extends AbstractResource implements ApiResourceInterface
            return [
                'list' => [
                    'methods'  => 'GET',
-                   'path'     => $this->makeRoutePath('s'),
-                   'action'   => $this->makeRouteAction('list'),
-                   'name'     => $this->makeRouteName('list')
+                   'path'     => $this->generatePath('s'),
+                   'action'   => $this->generateAction('list'),
+                   'name'     => $this->generateName('list')
                ],
                'show' => [
                    'methods'  => 'GET',
-                   'path'     => $this->makeRoutePath('/{id}'),
-                   'action'   => $this->makeRouteAction('show'),
-                   'name'     => $this->makeRouteName('show')
+                   'path'     => $this->generatePath('/{id}'),
+                   'action'   => $this->generateAction('show'),
+                   'name'     => $this->generateName('show')
                ],
                'create' => [
                    'methods'  => 'POST',
-                   'path'     => $this->makeRoutePath('/create'),
-                   'action'   => $this->makeRouteAction('create'),
-                   'name'     => $this->makeRouteName('create')
+                   'path'     => $this->generatePath('/create'),
+                   'action'   => $this->generateAction('create'),
+                   'name'     => $this->generateName('create')
                ],
                'edit' => [
                    'methods'  => 'PUT',
-                   'path'     => $this->makeRoutePath('/{id}/edit'),
-                   'action'   => $this->makeRouteAction('edit'),
-                   'name'     => $this->makeRouteName('edit')
+                   'path'     => $this->generatePath('/{id}/edit'),
+                   'action'   => $this->generateAction('edit'),
+                   'name'     => $this->generateName('edit')
                ],
                'destroy' => [
                    'methods'  => 'DELETE',
-                   'path'     => $this->makeRoutePath('/destroy/{id}'),
-                   'action'   => $this->makeRouteAction('destroy'),
-                   'name'     => $this->makeRouteName('destroy')
+                   'path'     => $this->generatePath('/destroy/{id}'),
+                   'action'   => $this->generateAction('destroy'),
+                   'name'     => $this->generateName('destroy')
                ]
            ];
        }

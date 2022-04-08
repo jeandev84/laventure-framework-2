@@ -29,6 +29,14 @@ abstract class AbstractResource
 
 
      /**
+      * @var string
+     */
+     protected $path;
+
+
+
+
+     /**
       * @var Route[]
      */
      protected $routes = [];
@@ -40,7 +48,7 @@ abstract class AbstractResource
       * @param string|null $name
       * @param string|null $controller
      */
-     public function __construct(string $name = null, string $controller = null)
+     public function __construct(string $name = null, string $controller = null, string $controllerSuffix = null)
      {
           if ($name) {
               $this->name($name);
@@ -49,7 +57,12 @@ abstract class AbstractResource
           if ($controller) {
               $this->controller($controller);
           }
+
+
+          $this->path = $this->preparePath($controllerSuffix, $controller);
      }
+
+
 
 
 
@@ -151,9 +164,9 @@ abstract class AbstractResource
       * @param string $path
       * @return string
      */
-     protected function makeRoutePath(string $path = ''): string
+     protected function generatePath(string $path = ''): string
      {
-          return trim($this->name, 's') . $path;
+          return trim($this->path, 's') . $path;
      }
 
 
@@ -165,7 +178,7 @@ abstract class AbstractResource
       * @param string $action
       * @return string
      */
-     protected function makeRouteAction(string $action): string
+     protected function generateAction(string $action): string
      {
           return sprintf('%s@%s', $this->getController(), $action);
      }
@@ -179,7 +192,7 @@ abstract class AbstractResource
       * @param string $name
       * @return string
      */
-     protected function makeRouteName(string $name): string
+     protected function generateName(string $name): string
      {
          return sprintf('%s.%s', $this->getName(), $name);
      }
@@ -198,33 +211,33 @@ abstract class AbstractResource
         return [
             'list' => [
                 'methods'  => 'GET',
-                'path'     => $this->makeRoutePath(),
-                'action'   => $this->makeRouteAction('list'),
-                'name'     => $this->makeRouteName('list')
+                'path'     => $this->generatePath(),
+                'action'   => $this->generateAction('list'),
+                'name'     => $this->generateName('list')
             ],
             'show' => [
                 'methods'  => 'GET',
-                'path'     => $this->makeRoutePath('/{id}'),
-                'action'   => $this->makeRouteAction('show'),
-                'name'     => $this->makeRouteName('show')
+                'path'     => $this->generatePath('/{id}'),
+                'action'   => $this->generateAction('show'),
+                'name'     => $this->generateName('show')
             ],
             'create' => [
                 'methods'  => 'GET|POST',
-                'path'     => $this->makeRoutePath('/create'),
-                'action'   => $this->makeRouteAction('create'),
-                'name'     => $this->makeRouteName('create')
+                'path'     => $this->generatePath('/create'),
+                'action'   => $this->generateAction('create'),
+                'name'     => $this->generateName('create')
             ],
             'edit' => [
                 'methods'  => 'GET|POST',
-                'path'     => $this->makeRoutePath('/{id}/edit'),
-                'action'   => $this->makeRouteAction('edit'),
-                'name'     => $this->makeRouteName('edit')
+                'path'     => $this->generatePath('/{id}/edit'),
+                'action'   => $this->generateAction('edit'),
+                'name'     => $this->generateName('edit')
             ],
             'destroy' => [
                 'methods'  => 'DELETE',
-                'path'     => $this->makeRoutePath('/destroy/{id}'),
-                'action'   => $this->makeRouteAction('destroy'),
-                'name'     => $this->makeRouteName('destroy')
+                'path'     => $this->generatePath('/destroy/{id}'),
+                'action'   => $this->generateAction('destroy'),
+                'name'     => $this->generateName('destroy')
             ]
         ];
     }
@@ -232,26 +245,13 @@ abstract class AbstractResource
 
 
 
-
     /**
-     * @return array
+     * @param string $controllerSuffix
+     * @param string $controller
+     * @return string
     */
-    public function getFilteredRouteParams(): array
+    protected function preparePath(string $controllerSuffix, string $controller): string
     {
-        $filtered = [];
-
-        foreach ($this->getParams() as $index => $params) {
-            $filtered[$index] = [$params[0], $params[1], $params[3]];
-        }
-
-        return $filtered;
+         return strtolower(str_replace($controllerSuffix, '', $controller));
     }
-
-
-
-    public function makeViewPath()
-    {
-
-    }
-
 }

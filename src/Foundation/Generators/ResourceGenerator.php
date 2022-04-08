@@ -288,12 +288,9 @@ class ResourceGenerator extends StubGenerator
      * @param string $resourceType
      * @return bool
     */
-    protected function generateResourceFromEntityClass(string $entityClass, string $resourceType = 'web'): bool
+    protected function generateResourceEntityClass(string $entityClass, string $resourceType = 'web'): bool
     {
-        $controllerName = sprintf('%sController', $entityClass);
-        $resourceName   = strtolower($entityClass);
-
-        return $this->generateResource($controllerName, $resourceName, $resourceType);
+        return $this->generateResource($entityClass,  $resourceType);
     }
 
 
@@ -312,63 +309,89 @@ class ResourceGenerator extends StubGenerator
     }
 
 
-
-
-
     /**
-     * @param string $controller
+     * @param string $controllerPath
      * @param array $actions
-     * @param string|null $resourceType
+     * @param array $apiParams
      * @return bool
     */
-    public function generateController(string $controller, array $actions = [], string $resourceType = 'web'): bool
+    public function generateController(string $controllerPath, array $actions = [], array $apiParams = []): bool
     {
-         $controllerClass  = $this->getControllerClass($controller);
-         $module           = $this->getModule($controller);
+         $class  = $this->getControllerClass($controllerPath);
+         $module = $this->getModule($controllerPath);
 
          if (empty($actions)) {
-             $actions = $this->makeDefaultActionParams($controller);
+             $actions = $this->makeDefaultActionParams($controllerPath);
          }
 
-         $controllerFullNamespace = $this->getControllerWithNamespace($controller);
+         if ($apiParams) {
 
-         if ($this->router->hasController($controllerFullNamespace)) {
-              return trigger_error("Controller {$controllerFullNamespace} already generated.");
-         }
+             $module = "Api\\{$module}";
+             $controllerPath = "Api/{$controllerPath}";
+             $controllerFullNamespace = $this->getControllerWithNamespace($controllerPath);
 
-         $controllerStub = $this->generateStub('routing/controller/blank', [
-            'ControllerNamespace' => $this->getControllerNamespace($module),
-            'ControllerClass'     => $controllerClass,
-            'ControllerActions'   => $this->generateActions($actions, $resourceType)
-         ]);
+             if ($this->router->hasResourceAPI($apiParams['resourceName'])) {
+                 trigger_error("Resource ApiController {$controllerFullNamespace} already generated.");
+                 return false;
+             }
 
+         } else {
 
-         // generate routes and templates
-         if ($actions) {
-             if ($resourceType === 'api') {
-                   // $this->generateApiRoutes($actions);
-             } else {
-                 $this->generateWebRoutes($actions, $module);
-                 $this->generateTemplates($actions);
+             $controllerFullNamespace = $this->getControllerWithNamespace($controllerPath);
+
+             if ($this->router->hasController($controllerFullNamespace)) {
+                 trigger_error("Controller {$controllerFullNamespace} already generated.");
+                 return false;
              }
          }
 
-         return $this->writeTo($this->loadControllerPath($controller), $controllerStub);
+
+
+         $controllerStub = $this->generateStub('routing/controller/blank', [
+            'ControllerNamespace' => $this->getControllerNamespace($module),
+            'ControllerClass'     => $class,
+            'ControllerActions'   => $this->generateActions($actions, $apiParams)
+         ]);
+
+         if ($apiParams) {
+            $this->generateApiRoutes($apiParams, $module);
+         } else {
+
+            // generate routes and templates
+            $this->generateWebRoutes($actions, $module);
+            $this->generateTemplates($actions);
+         }
+
+
+         return $this->writeTo($this->loadControllerPath($controllerPath), $controllerStub);
     }
 
 
-
-
     /**
-     * @param array $resourceName
-     * @param $controllerName
+     * @param array $apiParams
+     * @param string $module
      * @return bool
     */
-    protected function generateApiRoutes(array $resourceName, $controllerName): bool
+    protected function generateApiRoutes(array $apiParams, string $module): bool
     {
+         $resourceName       = $apiParams["resourceName"];
+         $resourceController = $apiParams["resourceController"];
+
+         $prefix  = strtolower(str_replace('\\', '/', $module));
+         $name    = str_replace('/', '.', $prefix);
+
+         $attributes = sprintf(
+             '["module" => "%s\\", "prefix" => "%s", "name" => "%s"]',
+              $module,
+              $prefix,
+              $name
+         );
+
          $stub = $this->generateStub("routing/routes/resource/api", [
-           'ResourceName'       => $resourceName,
-           'ResourceController' => $this->getControllerClass($controllerName)
+           'ResourceName'       =>  $resourceName,
+           'VARIABLE'           => sprintf("api_%s", $resourceName),
+           'ATTRIBUTE'          => $attributes,
+           'ResourceController' => $this->getControllerClass($resourceController)
          ]);
 
          return $this->append("config/routes/api.php", $stub);
@@ -397,15 +420,15 @@ class ResourceGenerator extends StubGenerator
      * Generate controller actions
      *
      * @param array $actions
-     * @param string $resourceType
+     * @param array $apiParams
      * @return string
     */
-    protected function generateActions(array $actions, string $resourceType): string
+    protected function generateActions(array $actions, array $apiParams = []): string
     {
          $actionStubs = [];
 
          foreach ($actions as $action => $params) {
-            if ($resourceType === 'api') {
+            if ($apiParams) {
                $actionStubs[] = $this->generateAPIActionStub($action, $params);
             } else {
                 $actionStubs[] = $this->generateWebActionStub($action, $params);
@@ -426,12 +449,12 @@ class ResourceGenerator extends StubGenerator
     */
     public function generateWebRoutes(array $actions, string $module = null)
     {
-          $stubRouteGroup  = [];
-          $actions         = array_values($actions);
+          $stubGroup = [];
+          $actions   = array_values($actions);
 
           foreach ($actions as $params) {
               if ($module) {
-                  $stubRouteGroup[] = $this->generateRouteStub($params, $module);
+                  $stubGroup[] = $this->generateRouteStub($params, $module);
               }else {
                   $this->generateWebRoute($params);
               }
@@ -440,7 +463,7 @@ class ResourceGenerator extends StubGenerator
           if ($module) {
               $this->generateWebRouteGroup([
                   'attributes' => $this->makeModuleAttributes($module),
-                  'routes'     => $stubRouteGroup
+                  'routes'     => $stubGroup
               ]);
           }
     }
@@ -508,21 +531,8 @@ class ResourceGenerator extends StubGenerator
     */
     public function generateControllerResourceWeb(string $controller): bool
     {
-         $resourceName = strtolower(str_replace(['Controller', DIRECTORY_SEPARATOR], ['', '_'], $controller));
-         return $this->generateResource($resourceName, $controller);
+         return $this->generateResource($controller);
     }
-
-
-
-    /**
-     * @param string $entityClass
-     * @return bool
-    */
-    public function generateResourceWebFromEntityClass(string $entityClass): bool
-    {
-           return $this->generateResourceFromEntityClass($entityClass);
-    }
-
 
 
 
@@ -531,53 +541,95 @@ class ResourceGenerator extends StubGenerator
      * @param string $entityClass
      * @return bool
     */
-    public function generateResourceAPIFromEntityClass(string $entityClass): bool
+    public function generateResourceWeb(string $entityClass): bool
     {
-         return $this->generateResourceFromEntityClass($entityClass, 'api');
+           return $this->generateResourceEntityClass($entityClass);
+    }
+
+
+
+
+
+    /**
+     * @param string $entityClass
+     * @return bool
+    */
+    public function generateResourceAPI(string $entityClass): bool
+    {
+         return $this->generateResourceEntityClass($entityClass, 'api');
     }
 
 
 
 
     /**
-     * @param string $resourceName
-     * @param string $controllerName
+     * @param string $class
      * @param string $resourceType
      * @return bool
     */
-    public function generateResource(string $resourceName, string $controllerName, string $resourceType = 'web'): bool
+    public function generateResource(string $class, string $resourceType = 'web'): bool
     {
-        $resource = new WebResource($resourceName, $controllerName);
+        $class              = str_replace('Controller', '', $class);
+        $resourceController = sprintf('%sController', $class);
+        $resourceName       = strtolower(str_replace(DIRECTORY_SEPARATOR, '_', $class));
+
+        $controllerSuffix = $this->router->getControllerSuffix();
+
+        $resource = new WebResource($resourceName, $resourceController, $controllerSuffix);
+        $resourceParams = $this->transformWebResourceParams($resource);
 
         if ($resourceType === 'api') {
-            $resource = new ApiResource($resourceName, $controllerName);
+            $resource = new ApiResource($resourceName, $resourceController, $controllerSuffix);
+            $resourceParams = $this->transformApiResourceParams($resource);
         }
 
-        $resourceParams = $this->transformResourceParams($resource);
+        $apiParams = compact('resourceName', 'resourceController');
 
-        return $this->generateController($controllerName, $resourceParams, $resourceType);
+        return $this->generateController($resourceController, $resourceParams, $apiParams);
     }
 
 
 
 
+
     /**
-     * @param AbstractResource $resource
+     * @param WebResource $resource
      * @return array
     */
-    protected function transformResourceParams(AbstractResource $resource): array
+    protected function transformWebResourceParams(WebResource $resource): array
     {
          $items = [];
 
          foreach ($resource->getParams() as $action => $params) {
               $actionParts        = explode('/', $params['action']);
-              $params['path']     = str_replace(['-', '_', '.'], '/', $params['path']);
               $params['viewPath'] = $this->makeRouteViewPath($resource->getController(), $action);
               $params['action']   = end($actionParts);
               $items[$action]     = $params;
          }
 
          return $items;
+    }
+
+
+
+
+    /**
+     * @param ApiResource $resource
+     * @return array
+    */
+    protected function transformApiResourceParams(ApiResource $resource): array
+    {
+        $items = [];
+
+        foreach ($resource->getParams() as $action => $params) {
+            $actionParts        = explode('/', $params['action']);
+            $params['path']     = "api/{$params['path']}";
+            $params['action']   = end($actionParts);
+            $params['name']     = "api.{$params['name']}";
+            $items[$action]     = $params;
+        }
+
+        return $items;
     }
 
 
@@ -659,7 +711,7 @@ class ResourceGenerator extends StubGenerator
     */
     protected function generateAPIActionStub(string $actionName, array $params)
     {
-         return $this->generateStub("routing/controller/web/action", [
+         return $this->generateStub("routing/controller/api/action", [
              "RouteMethod" => $params["methods"],
              "RoutePath"   => $params['path'],
              "RouteName"   => $params["name"],
