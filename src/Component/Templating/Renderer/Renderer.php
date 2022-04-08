@@ -2,10 +2,11 @@
 namespace Laventure\Component\Templating\Renderer;
 
 
+
 /**
  * @Render
 */
-class Renderer implements RendererInterface
+class Renderer implements RendererInterface, RenderLayoutInterface
 {
 
 
@@ -92,17 +93,13 @@ class Renderer implements RendererInterface
      * Renderer constructor
      *
      * @param string|null $resource
-     * @param string|null $layout
     */
-    public function __construct(string $resource = null, string $layout = null)
+    public function __construct(string $resource = null)
     {
           if ($resource) {
               $this->resourcePath($resource);
           }
 
-          if ($layout) {
-              $this->withLayout($layout);
-          }
 
           $this->cacheManager = new RenderCacheManager($resource);
           $this->compressor   = new RenderCompressor();
@@ -152,8 +149,7 @@ class Renderer implements RendererInterface
 
 
     /**
-     * @param $layout
-     * @return $this
+     * @inheritDoc
     */
     public function withLayout($layout): self
     {
@@ -258,16 +254,15 @@ class Renderer implements RendererInterface
 
 
     /**
-     * @param $templateContent
-     * @return string|null
+     * @inheritDoc
     */
-    public function renderLayout($templateContent): ?string
+    public function renderLayout($content): ?string
     {
-        $templateContent = $this->surroundContent($templateContent);
+        $content = $this->surroundContent($content);
         $layoutPath      = sprintf('%s%s', $this->getLayout(), $this->getPathExtension());
         $layoutContent   = $this->renderTemplate($this->loadPath($layoutPath));
 
-        return str_replace("{{ content }}", $templateContent, $layoutContent);
+        return str_replace("{{ content }}", $content, $layoutContent);
     }
 
 

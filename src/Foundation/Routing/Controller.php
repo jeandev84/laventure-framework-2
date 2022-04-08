@@ -11,12 +11,13 @@ use Laventure\Component\Database\Manager;
 use Laventure\Component\Http\Response\JsonResponse;
 use Laventure\Component\Http\Response\RedirectResponse;
 use Laventure\Component\Http\Response\Response;
+use Laventure\Component\Templating\Renderer\RenderLayoutInterface;
 
 
 /**
  * @Controller
 */
-class Controller implements ContainerAwareInterface
+abstract class Controller implements ContainerAwareInterface
 {
 
     /**
@@ -30,7 +31,7 @@ class Controller implements ContainerAwareInterface
     /**
      * @var mixed
     */
-    protected $layout = 'layouts/default';
+    protected $layout;
 
 
 
@@ -55,6 +56,17 @@ class Controller implements ContainerAwareInterface
     {
          $this->layout = $layout;
     }
+
+
+
+    /**
+     * @return bool|mixed
+    */
+    public function getLayout()
+    {
+         return $this->layout;
+    }
+
 
 
 
@@ -89,7 +101,12 @@ class Controller implements ContainerAwareInterface
     public function render(string $template, array $data = [], Response $response = null): Response
     {
            $renderer = $this->get('view');
-           $renderer->withLayout($this->layout);
+
+           if ($renderer instanceof RenderLayoutInterface) {
+               $renderer->withLayout($this->getLayout());
+               $this->container->instance("@layout", $this->getLayout());
+           }
+
            $output = $renderer->render($template, $data);
 
            if (! $response) {
