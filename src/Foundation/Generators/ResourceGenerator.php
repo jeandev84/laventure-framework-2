@@ -167,11 +167,7 @@ class ResourceGenerator extends StubGenerator
     */
     protected function makeRouteViewPath(string $controller, string $action): string
     {
-         return sprintf('%s%s%s.php',
-      $this->transformEntry($controller),
-             DIRECTORY_SEPARATOR,
-             $action
-         );
+         return sprintf('%s%s%s.php', $this->transformEntry($controller), DIRECTORY_SEPARATOR, $action);
     }
 
 
@@ -324,20 +320,19 @@ class ResourceGenerator extends StubGenerator
              $actions = $this->makeDefaultActionParams($controllerPath);
          }
 
+         $controllerFullNamespace = $this->getControllerWithNamespace($controllerPath);
+
          if ($apiParams) {
 
              $module = "Api\\{$module}";
              $controllerPath = "Api/{$controllerPath}";
-             $controllerFullNamespace = $this->getControllerWithNamespace($controllerPath);
 
              if ($this->router->hasResourceAPI($apiParams['resourceName'])) {
-                 trigger_error("Resource ApiController {$controllerFullNamespace} already generated.");
+                 trigger_error("Resource Api {$controllerFullNamespace} already generated.");
                  return false;
              }
 
          } else {
-
-             $controllerFullNamespace = $this->getControllerWithNamespace($controllerPath);
 
              if ($this->router->hasController($controllerFullNamespace)) {
                  trigger_error("Controller {$controllerFullNamespace} already generated.");
