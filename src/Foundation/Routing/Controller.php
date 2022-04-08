@@ -62,9 +62,13 @@ abstract class Controller implements ContainerAwareInterface
     /**
      * @return bool|mixed
     */
-    public function getLayout()
+    private function getLayout()
     {
-         return $this->layout;
+         if ($this->layout) {
+             $this->container->instance("@layout", $this->layout);
+         }
+
+         return $this->get("@layout");
     }
 
 
@@ -104,7 +108,6 @@ abstract class Controller implements ContainerAwareInterface
 
            if ($renderer instanceof RenderLayoutInterface) {
                $renderer->withLayout($this->getLayout());
-               $this->container->instance("@layout", $this->getLayout());
            }
 
            $output = $renderer->render($template, $data);

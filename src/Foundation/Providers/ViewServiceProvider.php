@@ -33,10 +33,11 @@ class ViewServiceProvider extends ServiceProvider
               $resource  = $this->locateResourcePath();
 
               $renderer  = new Renderer($resource);
-              $renderer->withLayout($this->getLayout())
-                       ->cache($this->getCacheStatus())
+              $renderer->cache($this->getCacheStatus())
                        ->cacheDir($this->getCachePath())
                        ->compress($this->getCompressStatus());
+
+              $this->app->instance("@layout", $this->getLayout());
 
               return $renderer;
          });
