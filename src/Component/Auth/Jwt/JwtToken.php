@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Component\Authentication\Jwt;
+namespace Laventure\Component\Auth\Jwt;
 
 
 /**

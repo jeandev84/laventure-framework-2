@@ -1,9 +1,9 @@
 <?php
-namespace Laventure\Component\Authentication\Encrypt\Hash;
+namespace Laventure\Component\Auth\Encrypt\Hash;
 
 
 
-use Laventure\Component\Authentication\Database\UserInterface;
+use Laventure\Component\Auth\Database\UserInterface;
 
 /**
  * @PasswordHash

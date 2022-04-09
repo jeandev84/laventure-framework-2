@@ -1,16 +1,16 @@
 <?php
-namespace Laventure\Component\Service\Html\DataGrid;
+namespace Laventure\Component\Helpers\Html\DataGrid;
 
 
 
-use Laventure\Component\Service\Html\HtmlTag;
+use Laventure\Component\Helpers\Html\Html;
 
 
 
 /**
  * @Table
 */
-class Table extends HtmlTag
+class Table extends Html
 {
 
 }
