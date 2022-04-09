@@ -11,6 +11,8 @@ use Laventure\Foundation\Facade\Console\Schedule;
 use Laventure\Foundation\Facade\Database\DB;
 use Laventure\Foundation\Facade\Database\Schema;
 use Laventure\Foundation\Facade\Routing\Route;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 
 /**
@@ -24,7 +26,6 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
     */
     public function boot()
     {
-         $this->loadWhoops();
          $this->loadEnvironments();
          $this->loadHelpers();
          $this->loadClassAliases();
@@ -45,13 +46,6 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
 
 
 
-    public function loadWhoops()
-    {
-
-    }
-
-
-
     /**
      * Load environments
      *
@@ -65,7 +59,29 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
             'app.env'   => getenv('APP_ENV'),
             'app.debug' => getenv('APP_DEBUG')
         ]);
+
+        $debug = getenv('APP_DEBUG');
+        $mode  = getenv('APP_ENV');
+
+        if ($debug && $mode === 'dev') {
+             $this->loadWhoops();
+        }
     }
+
+
+
+
+    /**
+     * @return void
+    */
+    protected function loadWhoops()
+    {
+         $whoops = new Run();
+         $whoops->pushHandler(new PrettyPageHandler());
+         $whoops->register();
+    }
+
+
 
 
 

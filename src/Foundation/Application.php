@@ -12,6 +12,7 @@ use Laventure\Foundation\Provider\AssetServiceProvider;
 use Laventure\Foundation\Provider\ConfigurationServiceProvider;
 use Laventure\Foundation\Provider\ConsoleServiceProvider;
 use Laventure\Foundation\Provider\DatabaseServiceProvider;
+use Laventure\Foundation\Provider\ErrorHandlerServiceProvider;
 use Laventure\Foundation\Provider\EventDispatcherServiceProvider;
 use Laventure\Foundation\Provider\FileSystemServiceProvider;
 use Laventure\Foundation\Provider\MiddlewareServiceProvider;
@@ -75,6 +76,50 @@ class Application extends Container implements ApplicationInterface
               $this->registerBaseProviders();
         }
 
+
+
+        /**
+         * Register base bindings of application
+         *
+         * @return void
+        */
+        protected function registerBaseBindings()
+        {
+             self::setInstance($this);
+
+             $this->instances([
+                Container::class          => $this,
+                ContainerInterface::class => $this,
+                'app'                     => $this
+             ]);
+        }
+
+
+
+
+        /**
+         * Registration base providers
+         *
+         * @return void
+        */
+        protected function registerBaseProviders()
+        {
+            $this->addProviders([
+                ApplicationServiceProvider::class,
+                ErrorHandlerServiceProvider::class,
+                FileSystemServiceProvider::class,
+                ConfigurationServiceProvider::class,
+                DatabaseServiceProvider::class,
+                MigrationServiceProvider::class,
+                MiddlewareServiceProvider::class,
+                EventDispatcherServiceProvider::class,
+                RouteServiceProvider::class,
+                AssetServiceProvider::class,
+                UrlGeneratorServiceProvider::class,
+                ViewServiceProvider::class,
+                ConsoleServiceProvider::class
+           ]);
+        }
 
 
 
@@ -181,6 +226,9 @@ class Application extends Container implements ApplicationInterface
         }
 
 
+
+
+
         /**
          * Pipe Console Kernel
          *
@@ -211,6 +259,7 @@ class Application extends Container implements ApplicationInterface
 
 
 
+
         /**
          * @param Request $request
          * @param Response $response
@@ -220,73 +269,4 @@ class Application extends Container implements ApplicationInterface
         {
               $response->sendBody();
         }
-
-
-
-
-        /**
-         * Register base bindings of application
-         *
-         * @return void
-        */
-        protected function registerBaseBindings()
-        {
-              self::setInstance($this);
-
-              $this->instances([
-                 Container::class          => $this,
-                 ContainerInterface::class => $this,
-                 'app'                     => $this
-             ]);
-        }
-
-
-
-
-        /**
-         * Registration base providers
-         *
-         * @return void
-        */
-        protected function registerBaseProviders()
-        {
-            $this->addProviders([
-                ApplicationServiceProvider::class,
-                FileSystemServiceProvider::class,
-                ConfigurationServiceProvider::class,
-                DatabaseServiceProvider::class,
-                MigrationServiceProvider::class,
-                MiddlewareServiceProvider::class,
-                EventDispatcherServiceProvider::class,
-                RouteServiceProvider::class,
-                AssetServiceProvider::class,
-                UrlGeneratorServiceProvider::class,
-                ViewServiceProvider::class,
-                ConsoleServiceProvider::class
-            ]);
-        }
-
-//
-//
-//        /**
-//         * @param array $middlewares
-//         * @return array
-//        */
-//        public function resolveMiddlewares(array $middlewares): array
-//        {
-//              $resolved = [];
-//
-//              foreach ($middlewares as $middleware) {
-//                  if (\is_string($middleware)) {
-//                     $middleware = $this->get($middleware);
-//                  }
-//
-//                  if (is_object($middleware)) {
-//                     $resolved[] = $middleware;
-//                  }
-//             }
-//
-//             return $resolved;
-//        }
-
 }
