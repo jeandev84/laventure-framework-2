@@ -120,7 +120,7 @@ class RenderCacheManager
        * @param string $template
        * @return string
       */
-      public function loadIncludeTemplate(string $template)
+      public function loadIncludeTemplate(string $template): string
       {
             return $this->getCacheDir() . DIRECTORY_SEPARATOR . "/includes/". md5($template). '.php';
       }
