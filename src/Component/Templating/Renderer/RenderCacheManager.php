@@ -93,9 +93,7 @@ class RenderCacheManager
       */
       public function cacheTemplate(string $template, string $content): bool
       {
-           $cachePath = $this->loadTemplateCachePath($template);
-
-           return $this->cache($cachePath, $content);
+           return $this->cache($this->loadTemplateCachePath($template), $content);
       }
 
 
@@ -108,9 +106,7 @@ class RenderCacheManager
       */
       public function cacheIncludeTemplate(string $template, $content)
       {
-            $cachPath = $this->loadIncludeTemplate($template);
-            
-            return $this->cache($cachPath, $content);
+            return $this->cache($this->loadIncludeTemplate($template), $content);
       }
 
 
