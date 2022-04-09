@@ -281,7 +281,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
         $content = $this->renderTags->replaceTags($content);
 
         if(! $this->cacheManager->cache($template, $content)) {
-            trigger_error("Something went wrong for caching template '{$template}'");
+            return false;
         }
 
         $cachePath = $this->cacheManager->loadCachePath($template);
