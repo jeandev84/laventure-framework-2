@@ -64,7 +64,6 @@ class Renderer implements RendererInterface, RenderLayoutInterface
 
 
 
-
     /**
      * @var bool
     */
@@ -85,6 +84,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
      * @var bool
     */
     protected $cached = true;
+
 
 
 
@@ -132,6 +132,9 @@ class Renderer implements RendererInterface, RenderLayoutInterface
 
          return $this;
     }
+
+
+
 
 
 
@@ -206,14 +209,13 @@ class Renderer implements RendererInterface, RenderLayoutInterface
 
 
 
-
     /**
      * @inheritDoc
     */
     public function render(string $template, array $arguments = [])
     {
         $content = $this->renderTemplate($this->loadTemplatePath($template));
-
+        
         if ($this->layout) {
             $content = $this->renderLayout($content);
         }
@@ -269,8 +271,23 @@ class Renderer implements RendererInterface, RenderLayoutInterface
 
 
 
+    /**
+     * @param $content
+     * @return mixed
+    */
+    public function replaceTags($content)
+    {
+         return $this->renderTags->replaceTags($content);
+    }
+
+
+
+
+
+
 
     /**
+     *
      * @param $template
      * @param $content
      * @param array $arguments
@@ -278,16 +295,45 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     */
     public function renderCache($template, $content, array $arguments = [])
     {
-        $content = $this->renderTags->replaceTags($content);
+        $content = $this->replaceTags($content);
 
-        if(! $this->cacheManager->cache($template, $content)) {
+        if(! $this->cacheManager->cacheTemplate($template, $content)) {
             return false;
         }
 
-        $cachePath = $this->cacheManager->loadCachePath($template);
+        $cachePath = $this->cacheManager->loadTemplateCachePath($template);
 
         return $this->renderTemplate($cachePath, $arguments);
     }
+
+
+
+
+    /**
+     *
+     * @param $path
+     * @return false|int
+    */
+    public function cacheIncludePath($path)
+    {
+         $content = $this->renderTemplate($this->loadPath($path));
+         $content = $this->replaceTags($content);
+         
+         return $this->cacheManager->cacheIncludeTemplate($path, $content);
+    }
+
+
+
+
+    /**
+     * @param $path
+     * @return string
+    */
+    public function loadIncludeCache($path): string
+    {
+         return $this->cacheManager->loadIncludeTemplate($path);
+    }
+
 
 
 
@@ -323,12 +369,11 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     /**
      * @param string $path
      * @return string
-     */
+    */
     public function loadPath(string $path): string
     {
         return $this->resource . DIRECTORY_SEPARATOR . $this->resolvePath($path);
     }
-
 
 
 

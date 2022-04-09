@@ -41,15 +41,15 @@ class RenderTags
     }
 
 
-
-
+    
+    
     /**
      * @return string[]
     */
     public function getContentTags(): array
     {
         return [
-            '{%'        =>  "<?=",
+            '{%'        =>  "<?php ",
             '%}'        =>  ";?>",
             '{{'        => "<?=",
             '}}'        => ";?>",

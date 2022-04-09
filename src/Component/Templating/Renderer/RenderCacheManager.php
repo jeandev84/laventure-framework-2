@@ -13,6 +13,14 @@ class RenderCacheManager
        * @var string
       */
       protected $cacheDir;
+      
+      
+
+
+      /**
+       * @var array 
+      */
+      protected $includePaths = [];
 
 
 
@@ -54,25 +62,55 @@ class RenderCacheManager
 
 
       /**
+       * Cache content
+       *
+       * @param string $cachePath
+       * @param $content
+       * @return false|int
+      */
+      public function cache(string $cachePath, $content)
+      {
+           $cacheDirname = pathinfo($cachePath, PATHINFO_DIRNAME);
+
+           if (! is_dir($cacheDirname)) {
+              @mkdir($cacheDirname, 0777, true);
+           }
+
+           if(! touch($cachePath)) {
+              trigger_error("Something went wrong for generation file '{$cachePath}' inside.", __METHOD__);
+           }
+
+           return file_put_contents($cachePath,  $content);
+      }
+
+
+
+
+      /**
        * @param string $template
        * @param string $content
        * @return bool
       */
-      public function cache(string $template, string $content): bool
+      public function cacheTemplate(string $template, string $content): bool
       {
-          $cachePath = $this->loadCachePath($template);
+           $cachePath = $this->loadTemplateCachePath($template);
 
-          $cacheDirname = pathinfo($cachePath, PATHINFO_DIRNAME);
+           return $this->cache($cachePath, $content);
+      }
 
-          if (! is_dir($cacheDirname)) {
-              @mkdir($cacheDirname, 0777, true);
-          }
 
-          if(! touch($cachePath)) {
-              trigger_error("Something went wrong for generation file '{$cachePath}' inside.", __METHOD__);
-          }
 
-          return file_put_contents($cachePath,  $content);
+
+      /**
+       * @param string $template
+       * @param $content
+       * @return false|int
+      */
+      public function cacheIncludeTemplate(string $template, $content)
+      {
+            $cachPath = $this->loadIncludeTemplate($template);
+            
+            return $this->cache($cachPath, $content);
       }
 
 
@@ -82,10 +120,26 @@ class RenderCacheManager
        * @param string $template
        * @return string
       */
-      public function loadCachePath(string $template): string
+      public function loadIncludeTemplate(string $template)
       {
-           return sprintf('%s%s%s', $this->getCacheDir(), DIRECTORY_SEPARATOR, md5($template). '.php');
+            return $this->getCacheDir() . DIRECTORY_SEPARATOR . "/includes/". md5($template). '.php';
       }
+
+
+      
+      
+      /**
+       * @param string $template
+       * @return string
+      */
+      public function loadTemplateCachePath(string $template): string
+      {
+            return $this->getCacheDir() . DIRECTORY_SEPARATOR . md5($template). '.php';
+      }
+      
+      
+      
+      
 
 
 

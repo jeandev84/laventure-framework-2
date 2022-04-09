@@ -347,6 +347,10 @@ if(! function_exists('includePath'))
     */
     function includePath(string $path)
     {
-        @require app()->get('view')->loadPath($path);
+        $renderer = app()->get('view');
+        
+        $renderer->cacheIncludePath($path);
+            
+        @include $renderer->loadIncludeCache($path);
     }
 }
