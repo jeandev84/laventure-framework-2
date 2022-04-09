@@ -161,7 +161,7 @@ if(! function_exists('app_name')) {
     */
     function app_name(string $suffix = ''): string
     {
-        return \config('app.name') . $suffix;
+        return ucfirst(\config('app.name')) . $suffix;
     }
 }
 
