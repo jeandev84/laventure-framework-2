@@ -104,8 +104,8 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
     */
     protected function loadClassAliases()
     {
-        foreach ($this->getClassAliases() as $alias => $className) {
-            \class_alias($className, $alias);
+        foreach ($this->getClassAliases() as $alias => $class) {
+            \class_alias($class, $alias);
         }
     }
 
@@ -119,7 +119,7 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
     */
     protected function loadFacades()
     {
-        $this->app->addFacades($this->getFacadeStack());
+        $this->app->addFacades($this->getFacades());
     }
 
 
@@ -145,7 +145,7 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
     /**
      * @return string[]
     */
-    protected function getFacadeStack(): array
+    protected function getFacades(): array
     {
         return [
             Route::class,
