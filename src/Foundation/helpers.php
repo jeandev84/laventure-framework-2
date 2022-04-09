@@ -2,6 +2,7 @@
 use Laventure\Component\Container\Container;
 use Laventure\Component\Http\Response\RedirectResponse;
 use Laventure\Component\Http\Response\Response;
+use Laventure\Component\Templating\Renderer\RenderLayoutInterface;
 
 
 /*
@@ -65,9 +66,29 @@ if (! function_exists('url')) {
 
     function url($path, $params = []): string
     {
-        return "";
+        return app()->get('router')->url($path, $params);
     }
 }
+
+
+
+/*
+|------------------------------------------------------------------
+|   Get application BASE URL
+|------------------------------------------------------------------
+*/
+
+if (! function_exists('baseURL')) {
+
+    /**
+     * @return string
+    */
+    function baseURL(): string
+    {
+        return app()->get('request')->baseURL();
+    }
+}
+
 
 
 
@@ -89,6 +110,7 @@ if(! function_exists('config')) {
         return app()->get('config')->get($key);
     }
 }
+
 
 
 
@@ -231,15 +253,19 @@ if(! function_exists('view'))
 {
 
     /**
-     * @param string $name
+     * @param string $template
      * @param array $data
      * @return Response
     */
-    function view(string $name, array $data = []): Response
+    function view(string $template, array $data = []): Response
     {
-        $layout = app()->get('@layout');
+        $render = app()->get('view');
 
-        $content = app()->get('view')->render($name, $data);
+        if ($render instanceof RenderLayoutInterface) {
+             $render->withLayout(app()->get('@layout'));
+        }
+
+        $content = $render->render($template, $data);
 
         return new Response($content, 200, []);
     }
@@ -267,7 +293,9 @@ if(! function_exists('asset'))
     */
     function asset(string $path): string
     {
-        return app()['assets']->url($path);
+        $asset = app()['assets']->setBaseURL(baseURL());
+
+        return $asset->url($path);
     }
 }
 
@@ -292,7 +320,9 @@ if(! function_exists('assets'))
     */
     function assets(array $files = []): string
     {
-        return app()['assets']->renderTemplates($files);
+        $asset = app()['assets']->setBaseURL(baseURL());
+
+        return $asset->renderTemplates($files);
     }
 }
 

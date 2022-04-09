@@ -56,11 +56,13 @@ class Asset implements AssetInterface
 
      /**
       * @param string $url
-      * @return void
+      * @return $this
      */
-     public function setBaseURL(string $url)
+     public function setBaseURL(string $url): self
      {
           $this->url = rtrim($url, '\\/');
+
+          return $this;
      }
 
 

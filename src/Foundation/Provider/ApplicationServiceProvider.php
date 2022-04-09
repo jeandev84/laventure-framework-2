@@ -6,6 +6,7 @@ use Laventure\Component\Container\Container;
 use Laventure\Component\Container\ServiceProvider\Contract\BootableServiceProvider;
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
 use Laventure\Component\Dotenv\Dotenv;
+use Laventure\Component\Http\Request\Request;
 use Laventure\Foundation\Application;
 use Laventure\Foundation\Facade\Console\Schedule;
 use Laventure\Foundation\Facade\Database\DB;
@@ -20,6 +21,12 @@ use Whoops\Run;
 */
 class ApplicationServiceProvider extends ServiceProvider implements BootableServiceProvider
 {
+
+
+    protected $provides = [
+        Request::class  => ['request']
+    ];
+
 
     /**
      * @inheritDoc
