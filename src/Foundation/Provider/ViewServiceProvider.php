@@ -37,8 +37,6 @@ class ViewServiceProvider extends ServiceProvider
                        ->cacheDir($this->getCachePath())
                        ->compress($this->getCompressStatus());
 
-              $this->app->instance("@layout", $this->getLayout());
-
               return $renderer;
          });
     }
@@ -63,18 +61,6 @@ class ViewServiceProvider extends ServiceProvider
     {
          return $this->app['@fs']->locate($this->getResourcePath());
     }
-
-
-
-
-    /**
-     * @return mixed
-    */
-    private function getLayout()
-    {
-        return $this->app['config']['view.layout'];
-    }
-
 
 
 
