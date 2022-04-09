@@ -1,5 +1,5 @@
 <?php
-namespace Laventure\Autoload\Exception;
+namespace Laventure\Psr4\Exception;
 
 
 /**

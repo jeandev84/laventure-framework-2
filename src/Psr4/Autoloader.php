@@ -1,8 +1,8 @@
 <?php
-namespace Laventure\Autoload;
+namespace Laventure\Psr4;
 
 
-use Laventure\Autoload\Exception\AutoloaderException;
+use Laventure\Psr4\Exception\AutoloaderException;
 
 
 /**
