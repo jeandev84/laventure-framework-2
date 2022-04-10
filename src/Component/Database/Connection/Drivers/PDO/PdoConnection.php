@@ -38,9 +38,8 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
         $config = $this->parseCredentials($config);
 
         $this->setConnection(
-            $this->makePdo($config['driver'], $this->getCredentials($config))
+            $this->makePdo($config['connection'], $this->getCredentials($config))
         );
-
 
         $this->reconnect($config);
     }
@@ -175,14 +174,14 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
 
 
     /**
-     * @param $driver
+     * @param $connection
      * @param $config
      * @return bool|PDO
     */
-    public function makePdo($driver, $config)
+    public function makePdo($connection, $config)
     {
-        if (! Connection::has($driver)) {
-            trigger_error("Unable connection driver '{$driver}' for PDO connection.");
+        if (! Connection::has($connection)) {
+            trigger_error("Unable connection '{$connection}' for PDO.");
         }
 
         return Connection::make($config);
@@ -196,13 +195,9 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
      * @param string|null $database
      * @return string
     */
-    protected function makeDSN(ConfigurationBag $config, string $database = null): string
+    protected function dsn(ConfigurationBag $config, string $database = null): string
     {
-         $dsn =  sprintf('%s:host=%s;port=%s;',
-             $config['driver'],
-             $config['host'],
-             $config['port']
-         );
+         $dsn =  sprintf('%s:host=%s;port=%s;', $config['connection'], $config['host'], $config['port']);
 
          if ($database) {
               return sprintf('%s;dbname=%s;', $dsn, $database);
@@ -223,7 +218,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     protected function getCredentials(ConfigurationBag $config, string $database = null): array
     {
         return [
-            'dsn'      => $this->makeDSN($config, $database),
+            'dsn'      => $this->dsn($config, $database),
             'username' => $this->getUsername(),
             'password' => $this->getPassword(),
             'options'  => $config['options']
@@ -267,7 +262,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     {
          if ($this->hasDatabase()) {
              $this->setConnection(
-                 $this->makePdo($config['driver'], $this->getCredentials($config, $config['database']))
+                 $this->makePdo($config['connection'], $this->getCredentials($config, $config['database']))
              );
          }
     }

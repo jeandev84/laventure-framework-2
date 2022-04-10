@@ -40,6 +40,10 @@ class DatabaseServiceProvider extends ServiceProvider
     */
     public function register()
     {
+         if (! $this->getConnectionType()) {
+              exit("Unable connection type inside .env (DB_TYPE)\n");
+         }
+
          $manager = new Manager();
          $manager->addConnection($this->app['config']['database']);
          $manager->bootEntityManager($service = new EntityManagerService($this->app));
@@ -110,5 +114,16 @@ class DatabaseServiceProvider extends ServiceProvider
     private function em()
     {
          return $this->app[EntityManager::class];
+    }
+
+
+
+
+    /**
+     * @return mixed
+    */
+    private function getConnectionType()
+    {
+        return $this->app['config']['database.connection'];
     }
 }

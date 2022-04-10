@@ -42,8 +42,7 @@ class MigrationServiceProvider extends ServiceProvider
         $loader = new MigrationLoader($this->app, $this->app[Migrator::class]);
         $loader->setResourcePattern('app/Migration/*.php')
                ->setNamespace('App\\Migration')
-               ->setLocatePath('app/Migration')
-        ;
+               ->setLocatePath('app/Migration');
 
         $loader->loadMigrations($this->app['@fs']);
         $this->app->instance(MigrationLoader::class, $loader);

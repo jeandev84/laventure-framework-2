@@ -42,7 +42,7 @@ class MysqlConnection extends PdoConnection
                   $this->config->get('collation', 'utf8_general_ci')
          );
 
-         $this->exec($sql);
+         return $this->exec($sql);
     }
 
 
@@ -51,7 +51,7 @@ class MysqlConnection extends PdoConnection
     /**
      * Drop database
      *
-     * @return mixed
+     * @return bool
     */
     public function dropDatabase()
     {
