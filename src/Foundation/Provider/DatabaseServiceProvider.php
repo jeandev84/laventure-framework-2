@@ -41,7 +41,7 @@ class DatabaseServiceProvider extends ServiceProvider
     public function register()
     {
          if (! $this->getConnectionType()) {
-              exit("Unable connection type inside .env (DB_TYPE)\n");
+              exit("Unable connection type inside .env (DB_TYPE) or inside config params \n");
          }
 
          $manager = new Manager();
