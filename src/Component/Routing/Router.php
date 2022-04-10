@@ -223,7 +223,7 @@ class Router implements RouterInterface
     */
     public function addRoute(Route $route): Route
     {
-        $middlewares = $this->getGroupMiddlewares();
+        $middlewares = $this->getMiddlewareGroup();
 
         $route->domain($this->getDomain())
               ->where($this->patterns)
@@ -686,7 +686,7 @@ class Router implements RouterInterface
     /**
      * @return array
      */
-    public function getGroupMiddlewares(): array
+    public function getMiddlewareGroup(): array
     {
         return $this->resolver->getGroup()->getMiddlewares();
     }
