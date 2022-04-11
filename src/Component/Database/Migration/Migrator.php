@@ -260,7 +260,7 @@ class Migrator implements MigratorInterface
     {
           $migration->up();
 
-          $this->queryBuilder->insert($this->getAttributesVersionTable($migration));
+          $this->queryBuilder->insert($this->getAttributes($migration));
     }
 
 
@@ -336,7 +336,7 @@ class Migrator implements MigratorInterface
      * @param MigrationInterface $migration
      * @return array
     */
-    protected function getAttributesVersionTable(MigrationInterface $migration): array
+    protected function getAttributes(MigrationInterface $migration): array
     {
         return [
             'version'     => $migration->getName(),
