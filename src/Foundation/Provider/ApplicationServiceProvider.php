@@ -99,7 +99,7 @@ class ApplicationServiceProvider extends ServiceProvider implements BootableServ
     */
     protected function loadHelpers()
     {
-        require __DIR__.'/../helpers.php';
+        require_once __DIR__.'/../helpers.php';
     }
 
 
