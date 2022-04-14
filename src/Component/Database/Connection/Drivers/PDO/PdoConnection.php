@@ -57,17 +57,15 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     }
 
 
-
-
     /**
      * @inheritDoc
     */
     public function getConnection(): PDO
     {
-         return $this->getPdo();
+         return  (function () {
+             return $this->getPdo();
+         })();
     }
-
-
 
 
     /**
@@ -75,10 +73,8 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     */
     public function beginTransaction()
     {
-        return $this->getPdo()->beginTransaction();
+        return $this->getConnection()->beginTransaction();
     }
-
-
 
 
     /**
@@ -86,7 +82,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     */
     public function commit()
     {
-        return $this->getPdo()->commit();
+        return $this->getConnection()->commit();
     }
 
 
@@ -96,7 +92,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     */
     public function rollback()
     {
-        return $this->getPdo()->rollBack();
+        return $this->getConnection()->rollBack();
     }
 
 
@@ -106,7 +102,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     */
     public function lastInsertId(): int
     {
-        return $this->getPdo()->lastInsertId();
+        return $this->getConnection()->lastInsertId();
     }
 
 
@@ -116,7 +112,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     */
     public function createNativeQuery(): QueryInterface
     {
-         return new Query($this->getPdo());
+         return new Query($this->getConnection());
     }
 
 
@@ -142,7 +138,7 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     */
     public function exec($sql): bool
     {
-        return $this->getPdo()->exec($sql);
+        return $this->getConnection()->exec($sql);
     }
 
 

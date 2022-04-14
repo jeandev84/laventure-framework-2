@@ -110,7 +110,6 @@ class Application extends Container implements ApplicationInterface
                 FileSystemServiceProvider::class,
                 ConfigurationServiceProvider::class,
                 DatabaseServiceProvider::class,
-                /* MigrationServiceProvider::class, */
                 MiddlewareServiceProvider::class,
                 EventDispatcherServiceProvider::class,
                 RouteServiceProvider::class,

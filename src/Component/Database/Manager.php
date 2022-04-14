@@ -55,11 +55,15 @@ class Manager extends DatabaseManager
       {
             if (! $this->booted()) {
 
+                if (! isset($credentials['connection'])) {
+                     trigger_error("Undefined index (connection) from credentials.");
+                }
+
                 $connectionName = $credentials['connection'];
 
                 if (isset($credentials[$connectionName])) {
 
-                    $this->connect($credentials['connection'], $credentials);
+                    $this->connect($connectionName, $credentials);
 
                     $this->boot();
                 }

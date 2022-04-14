@@ -48,6 +48,7 @@ class DatabaseServiceProvider extends ServiceProvider
          $manager->addConnection($this->app['config']['database']);
          $this->app->instance(Manager::class, $manager);
 
+
          if ($manager->getConnection()) {
 
              $manager->bootEntityManager($service = new EntityManagerService($this->app));

@@ -2,8 +2,8 @@
 namespace Laventure\Foundation\Routing;
 
 
-use Laventure\Component\Authentication\Database\User;
-use Laventure\Component\Authentication\Database\UserInterface;
+use Laventure\Component\Auth\Database\UserInterface;
+use Laventure\Component\Auth\Database\User;
 use Laventure\Component\Container\Container;
 use Laventure\Component\Container\Contract\ContainerAwareInterface;
 use Laventure\Component\Container\Contract\ContainerInterface;
