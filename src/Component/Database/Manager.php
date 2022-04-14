@@ -56,7 +56,7 @@ class Manager extends DatabaseManager
             if (! $this->booted()) {
 
                 if (! isset($credentials['connection'])) {
-                     trigger_error("Undefined index (connection) from credentials.");
+                     trigger_error("Invalid credentials param (connection).");
                 }
 
                 $connectionName = $credentials['connection'];
