@@ -4,7 +4,6 @@ namespace Laventure\Component\Database\ORM\Manager;
 
 
 use Laventure\Component\Database\Connection\Contract\ConnectionInterface;
-use Laventure\Component\Database\Connection\Contract\ObjectCollectorInterface;
 use Laventure\Component\Database\Connection\Contract\QueryInterface;
 use Laventure\Component\Database\ORM\Manager\Contract\EntityManagerInterface;
 use Laventure\Component\Database\ORM\Manager\Contract\EntityManagerServiceInterface;

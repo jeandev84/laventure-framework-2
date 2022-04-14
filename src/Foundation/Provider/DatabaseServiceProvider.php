@@ -5,6 +5,8 @@ namespace Laventure\Foundation\Provider;
 use Laventure\Component\Container\ServiceProvider\ServiceProvider;
 use Laventure\Component\Database\Connection\Contract\ConnectionInterface;
 use Laventure\Component\Database\Manager;
+use Laventure\Component\Database\Migration\Contract\MigratorInterface;
+use Laventure\Component\Database\Migration\Migrator;
 use Laventure\Component\Database\ORM\Manager\Contract\EntityManagerInterface;
 use Laventure\Component\Database\ORM\Manager\Contract\EntityManagerServiceInterface;
 use Laventure\Component\Database\ORM\Manager\Contract\ObjectManager;
@@ -13,6 +15,7 @@ use Laventure\Component\Database\ORM\Manager\Fixtures\FixtureManager;
 use Laventure\Component\Database\Schema\Schema;
 use Laventure\Foundation\Loader\EntityLoader;
 use Laventure\Foundation\Loader\FixtureLoader;
+use Laventure\Foundation\Loader\MigrationLoader;
 use Laventure\Foundation\Service\ORM\EntityManagerService;
 
 
@@ -29,7 +32,8 @@ class DatabaseServiceProvider extends ServiceProvider
         Manager::class             => ['db.laventure'],
         ConnectionInterface::class => ['db.connection'],
         EntityManager::class       => [EntityManagerInterface::class, ObjectManager::class],
-        Schema::class              => ['db.schema']
+        Schema::class              => ['db.schema'],
+        Migrator::class            => ['migrator', MigratorInterface::class],
     ];
 
 
@@ -40,19 +44,24 @@ class DatabaseServiceProvider extends ServiceProvider
     */
     public function register()
     {
-         if (! $this->getConnectionType()) {
-              exit("Unable connection type inside .env (DB_TYPE) or inside config params \n");
-         }
-
          $manager = new Manager();
          $manager->addConnection($this->app['config']['database']);
-         $manager->bootEntityManager($service = new EntityManagerService($this->app));
-
          $this->app->instance(Manager::class, $manager);
-         $this->app->instance(ConnectionInterface::class, $manager->getConnection());
-         $this->app->instance(EntityManagerServiceInterface::class, $service);
-         $this->app->instance(EntityManager::class, $manager->getEntityManager());
-         $this->app->instance(Schema::class, $manager->schema());
+
+         if ($manager->getConnection()) {
+
+             $manager->bootEntityManager($service = new EntityManagerService($this->app));
+             $this->app->instance(ConnectionInterface::class, $manager->getConnection());
+             $this->app->instance(EntityManagerServiceInterface::class, $service);
+             $this->app->instance(EntityManager::class, $manager->getEntityManager());
+             $this->app->instance(Schema::class, $manager->schema());
+
+             $this->app->singleton(Migrator::class, function () use ($manager){
+                 $migrator = new Migrator($manager->getConnection());
+                 $migrator->table($this->app['config']['database.migration_table']);
+                 return $migrator;
+             });
+         }
     }
 
 
@@ -63,8 +72,11 @@ class DatabaseServiceProvider extends ServiceProvider
     */
     public function terminate()
     {
-         $this->registerFixtureLoader();
-         $this->registerEntityLoader();
+         if ($this->getConnection()) {
+             $this->registerEntityLoader();
+             $this->registerFixtureLoader();
+             $this->registerMigrationLoader();
+         }
     }
 
 
@@ -74,6 +86,7 @@ class DatabaseServiceProvider extends ServiceProvider
     */
     private function registerFixtureLoader()
     {
+          // Fixture Loader
           $fixtureManager = new FixtureManager($this->em());
           $fixtureLoader  = new FixtureLoader($this->app, $fixtureManager);
 
@@ -107,6 +120,23 @@ class DatabaseServiceProvider extends ServiceProvider
 
 
 
+    /**
+     * @return void
+    */
+    private function registerMigrationLoader()
+    {
+         // Migration loader
+         $loader = new MigrationLoader($this->app, $this->app[Migrator::class]);
+         $loader->setResourcePattern('app/Migration/*.php')
+                ->setNamespace('App\\Migration')
+                ->setLocatePath('app/Migration');
+
+         $loader->loadMigrations($this->app['@fs']);
+         $this->app->instance(MigrationLoader::class, $loader);
+    }
+
+
+
 
     /**
      * @return false|mixed|object|string|null
@@ -125,5 +155,16 @@ class DatabaseServiceProvider extends ServiceProvider
     private function getConnectionType()
     {
         return $this->app['config']['database.connection'];
+    }
+
+
+
+
+    /**
+     * @return mixed
+    */
+    private function getConnection()
+    {
+         return $this->app[Manager::class]->getConnection();
     }
 }

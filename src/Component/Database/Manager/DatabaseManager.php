@@ -7,6 +7,7 @@ use Laventure\Component\Database\Connection\Contract\ConnectionInterface;
 use Laventure\Component\Database\Manager\Contract\DatabaseManagerInterface;
 
 
+
 /**
  * @DatabaseManager
 */
@@ -84,9 +85,9 @@ class DatabaseManager implements DatabaseManagerInterface
     /**
      * Get current connection
      *
-     * @return string
+     * @return mixed
     */
-    public function getCurrentConnection(): string
+    public function getCurrentConnection()
     {
          return $this->connection;
     }
@@ -167,9 +168,9 @@ class DatabaseManager implements DatabaseManagerInterface
      * get connection configuration credentials by name
      *
      * @param string $name
-     * @return array
+     * @return mixed
     */
-    public function configuration(string $name): array
+    public function configuration(string $name)
     {
         if (! $this->factory->configs->has($name)) {
             trigger_error("Could not detect credentials for connection '{$name}'");
@@ -186,14 +187,18 @@ class DatabaseManager implements DatabaseManagerInterface
     /**
      * @inheritDoc
     */
-    public function connection($name = null)
+    public function connection($name = null): ?ConnectionInterface
     {
           $name = $name ?? $this->getCurrentConnection();
+
+          if (! $name) {
+              return null;
+          }
 
           $config = $this->configuration($name);
 
           if (! $this->factory->connections->has($name)) {
-               trigger_error("Unavailable connection name : '{$name}'");
+              trigger_error("Unavailable connection name : '{$name}'");
           }
 
           $connection = $this->factory->makeConnection($name, $config);
@@ -203,6 +208,20 @@ class DatabaseManager implements DatabaseManagerInterface
 
           return $connection;
     }
+
+
+
+
+    /**
+     * Get PDO connection
+     *
+     * @return ConnectionInterface|null
+    */
+    public function getConnection(): ?ConnectionInterface
+    {
+        return $this->connection();
+    }
+
 
 
 
@@ -295,6 +314,7 @@ class DatabaseManager implements DatabaseManagerInterface
     {
          $this->status[$connection->getName()] = $connection->connected();
     }
+
 
 
 

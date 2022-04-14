@@ -216,10 +216,10 @@ class Container extends AbstractContainer
     protected function registerProvides(ServiceProvider $provider)
     {
         foreach ($provider->getProvides() as $abstract => $provides) {
-             $provides = (array) $provides;
-             foreach ($provides as $provide) {
-                   $this->alias($provide, $abstract);
-             }
+            $provides = (array) $provides;
+            foreach ($provides as $provide) {
+                $this->alias($provide, $abstract);
+            }
         }
     }
 
