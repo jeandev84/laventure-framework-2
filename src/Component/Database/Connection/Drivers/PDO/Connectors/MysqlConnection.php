@@ -63,4 +63,13 @@ class MysqlConnection extends PdoConnection
 
         return $this->exec($sql);
     }
+
+
+    /**
+     * @return bool|mixed|void
+    */
+    public function showDatabases()
+    {
+        return $this->exec('SHOW DATABASES;');
+    }
 }
