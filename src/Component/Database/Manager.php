@@ -45,6 +45,8 @@ class Manager extends DatabaseManager
       protected $booted = false;
 
 
+
+
       /**
        * @param array $credentials
        * @return void
@@ -53,9 +55,14 @@ class Manager extends DatabaseManager
       {
             if (! $this->booted()) {
 
-                $this->connect($credentials['connection'], $credentials);
+                $connectionName = $credentials['connection'];
 
-                $this->boot();
+                if (isset($credentials[$connectionName])) {
+
+                    $this->connect($credentials['connection'], $credentials);
+
+                    $this->boot();
+                }
             }
 
       }
@@ -71,7 +78,7 @@ class Manager extends DatabaseManager
       */
       public function bootEntityManager(EntityManagerServiceInterface $service)
       {
-            $this->setEntityManager(new EntityManager($this->connection(), $service));
+           $this->setEntityManager(new EntityManager($this->connection(), $service));
       }
 
 
@@ -99,21 +106,12 @@ class Manager extends DatabaseManager
       */
       public function pdo(): PDO
       {
-           return $this->getConnection()->getPdo();
+           return $this->pdoConnection($this->getCurrentConnection())->getPdo();
       }
 
 
 
 
-      /**
-        * Get PDO connection
-        *
-        * @return PdoConnectionInterface
-      */
-      public function getConnection(): PdoConnectionInterface
-      {
-           return $this->factory->getPdoConnection($this->getCurrentConnection());
-      }
 
 
 
@@ -143,6 +141,8 @@ class Manager extends DatabaseManager
 
           return static::$instance;
      }
+
+
 
 
 
@@ -183,7 +183,7 @@ class Manager extends DatabaseManager
      */
      public function createDatabase()
      {
-          return $this->connection()->createDatabase();
+          return ""; // $this->connection()->createDatabase();
      }
 
 
@@ -195,7 +195,7 @@ class Manager extends DatabaseManager
     */
     public function dropDatabase()
     {
-        return $this->connection()->createDatabase();
+        return ""; // $this->connection()->createDatabase();
     }
 
 

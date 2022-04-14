@@ -113,7 +113,7 @@ abstract class AbstractContainer implements ContainerInterface, ArrayAccess
     public function getConcreteContext(string $abstract)
     {
         if(! $this->bounded($abstract)) {
-            return $abstract;
+             return $abstract;
         }
 
         return $this->bindings[$abstract]['concrete'];
@@ -398,7 +398,11 @@ abstract class AbstractContainer implements ContainerInterface, ArrayAccess
             return $this->makeSingleton($abstract, $concrete);
         }
 
-        return $concrete;
+        if (is_object($concrete) || is_string($concrete)) {
+            return $concrete;
+        }
+
+        return null;
     }
 
 

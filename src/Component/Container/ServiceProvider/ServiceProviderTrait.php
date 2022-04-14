@@ -60,6 +60,17 @@ trait ServiceProviderTrait
 
 
     /**
+     * @param array $provides
+     * @return void
+    */
+    public function setProvides(array $provides)
+    {
+        $this->provides = $provides;
+    }
+
+
+
+    /**
      * @return void
     */
     public function terminate() {}
