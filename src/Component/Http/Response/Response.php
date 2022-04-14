@@ -22,7 +22,7 @@ class Response extends Message implements ResponseInterface, StatusCodeInterface
 
 
       /**
-       * @var string
+       * @var mixed
       */
       protected $content;
 
@@ -62,7 +62,7 @@ class Response extends Message implements ResponseInterface, StatusCodeInterface
 
 
       /**
-       * @param mixed $content
+       * @param string|null $content
        * @param int $statusCode
        * @param array $headers
       */
@@ -80,11 +80,11 @@ class Response extends Message implements ResponseInterface, StatusCodeInterface
 
 
       /**
-       * @return mixed|string
+       * @return string
       */
-      public function getContent()
+      public function getContent(): string
       {
-           return $this->content;
+           return (string) $this->content;
       }
 
 
@@ -93,7 +93,7 @@ class Response extends Message implements ResponseInterface, StatusCodeInterface
        * @param string $content
        * @return void
       */
-      public function setContent(string $content)
+      public function setContent($content)
       {
            $this->content = $content;
       }
