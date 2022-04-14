@@ -3,6 +3,7 @@ namespace Laventure\Component\Database\Connection\Drivers\PDO;
 
 
 use Closure;
+use Exception;
 use Laventure\Component\Database\Connection\Configuration\ConfigurationBag;
 use Laventure\Component\Database\Connection\Contract\QueryInterface;
 use Laventure\Component\Database\Connection\Drivers\PDO\Contract\PdoConnectionInterface;
@@ -156,15 +157,14 @@ class PdoConnection extends IConnection implements PdoConnectionInterface
     }
 
 
-
-
     /**
      * @return PDO
+     * @throws Exception
     */
     public function getPdo(): PDO
     {
         if (! $this->connected()) {
-            trigger_error("unable PDO connection.");
+            throw new Exception("unable PDO connection.");
         }
 
         return $this->connection;
