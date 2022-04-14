@@ -28,12 +28,13 @@ class MigrationServiceProvider extends ServiceProvider
     */
     public function register()
     {
-        $this->app->singleton(Migrator::class, function () {
-            $migrator = new Migrator($this->app['db.connection']);
-            $migrator->table($this->app['config']['database.migration_table']);
-            return $migrator;
-        });
-
+        if ($this->getConnection()) {
+            $this->app->singleton(Migrator::class, function () {
+                $migrator = new Migrator($this->app['db.connection']);
+                $migrator->table($this->app['config']['database.migration_table']);
+                return $migrator;
+            });
+        }
     }
 
 
@@ -48,4 +49,13 @@ class MigrationServiceProvider extends ServiceProvider
         $this->app->instance(MigrationLoader::class, $loader);
     }
 
+
+
+    /**
+     * @return false|mixed|object|string|null
+    */
+    private function getConnection()
+    {
+         return $this->app['db.connection'];
+    }
 }
