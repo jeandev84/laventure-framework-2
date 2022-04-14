@@ -130,7 +130,7 @@ class LaventureRouter extends Router
 
 
            // call action
-           if (! $route->callable()) {
+           if (! $route->isClosure()) {
 
                $controller  = $route->getController();
                $action      = $route->getAction();

@@ -414,11 +414,21 @@ class Route implements \ArrayAccess
         /**
          * @return callable
         */
-        public function getCallback(): callable
+        public function getCallback()
         {
             return $this->callback;
         }
 
+
+
+
+        /**
+         * @return bool
+        */
+        public function isClosure(): bool
+        {
+             return $this->callback instanceof \Closure;
+        }
 
 
 
@@ -677,7 +687,7 @@ class Route implements \ArrayAccess
                 return false;
             }
 
-            return call_user_func_array($this->callback, $this->getMatchValues());
+            return call_user_func_array($this->getCallback(), $this->getMatchValues());
         }
 
 
