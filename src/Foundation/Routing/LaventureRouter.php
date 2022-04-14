@@ -182,7 +182,7 @@ class LaventureRouter extends Router
         * @param $response
         * @return JsonResponse|Response
       */
-      protected function response($response = null)
+      protected function response($response)
       {
           if ($response instanceof Response) {
              return $response;
