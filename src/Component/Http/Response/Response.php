@@ -68,7 +68,10 @@ class Response extends Message implements ResponseInterface, StatusCodeInterface
       */
       public function __construct($content = null, int $statusCode = 200, array $headers = [])
       {
-           $this->content    = $content;
+           if($content) {
+               $this->setContent($content);
+           }
+
            $this->statusCode = $statusCode;
            $this->headers    = new ResponseHeaderBag($headers);
       }
