@@ -266,6 +266,12 @@ class Application extends Container implements ApplicationInterface
         */
         public function terminate(Request $request, Response $response)
         {
+              // show content
               $response->sendBody();
+
+              // remove session flashes
+              // $request->sessions->removeFlashes();
+
+              // display debug information
         }
 }

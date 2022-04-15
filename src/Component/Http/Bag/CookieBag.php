@@ -126,6 +126,7 @@ class CookieBag extends ParameterBag
     public function remove(string $key)
     {
          if ($this->has($key)) {
+              // time() -10(s)
               $this->set($key, '', -3600);
               parent::remove($key);
          }
