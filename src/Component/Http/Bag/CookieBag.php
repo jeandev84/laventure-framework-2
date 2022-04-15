@@ -112,6 +112,8 @@ class CookieBag extends ParameterBag
     {
         new Cookie($key, $value, $expires, $path, $this->domain, $this->secure, $this->httpOnly);
 
+        $_COOKIE[$key] = $value;
+
         return $this;
     }
 
