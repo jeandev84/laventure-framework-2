@@ -298,8 +298,8 @@ class Manager extends DatabaseManager
      */
      private function boot()
      {
-         $this->booted   = true;
          self::$instance = $this;
+         $this->booted   = true;
      }
 
 
