@@ -73,14 +73,6 @@ class Renderer implements RendererInterface, RenderLayoutInterface
 
 
     /**
-     * @var string
-    */
-    protected $cacheDir;
-
-
-
-
-    /**
      * @var bool
     */
     protected $cached = true;
@@ -183,9 +175,9 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     */
     public function cacheDir(string $path): self
     {
-         $this->cacheDir = $path;
-
-         $this->cacheManager->cacheDir($path);
+         if ($this->cached) {
+             $this->cacheManager->cacheDir($path);
+         }
 
          return $this;
     }
@@ -214,7 +206,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     */
     public function render(string $template, array $arguments = [])
     {
-        $content = $this->renderTemplate($this->loadTemplatePath($template));
+        $content = $this->renderTemplate($this->loadTemplate($template));
         
         if ($this->layout) {
             $content = $this->renderLayout($content);
@@ -342,7 +334,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
      * @param $template
      * @return string
     */
-    public function loadTemplatePath($template): string
+    public function loadTemplate($template): string
     {
           $extension = pathinfo($template, PATHINFO_EXTENSION);
           $template  = str_replace('.'. $extension, '', $template);

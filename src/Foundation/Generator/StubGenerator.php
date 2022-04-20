@@ -103,7 +103,7 @@ class StubGenerator
           $replacements['GenerateTime']    =  date('d/m/Y H:i:s');
           $replacements['ApplicationName'] =  $this->app->getName();
 
-          $this->fileSystem->root($this->getRoot());
+          $this->fileSystem->basePath($this->getRoot());
 
           return $this->fileSystem->replace(
               sprintf('%s.%s', $filename, $this->getStubExtension()),
@@ -122,7 +122,7 @@ class StubGenerator
     */
     public function writeTo(string $targetPath, string $stub, bool $append = true): bool
     {
-        $this->fileSystem->root($this->getProjectDir());
+        $this->fileSystem->basePath($this->getProjectDir());
 
         if ($this->fileSystem->exists($targetPath)) {
              trigger_error("File {$targetPath} already exist.");
@@ -160,7 +160,7 @@ class StubGenerator
     */
     public function generateFile(string $fileName): bool
     {
-        $this->fileSystem->root($this->getProjectDir());
+        $this->fileSystem->basePath($this->getProjectDir());
 
         if($this->fileSystem->make($fileName)) {
             $this->generatedPaths[] = $fileName;

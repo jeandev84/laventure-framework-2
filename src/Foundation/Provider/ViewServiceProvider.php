@@ -69,8 +69,7 @@ class ViewServiceProvider extends ServiceProvider
     */
     private function getCacheDir(): string
     {
-        /* return $this->app['config']['view.cacheDir']; */
-        return "/storage/cache/app/views";
+        return $this->app['config']['view.cacheDir'];
     }
 
 

@@ -28,10 +28,27 @@ class FileLocator implements FileLocatorInterface
     /**
      * @param mixed $root
     */
-    public function __construct($root)
+    public function __construct($root = null)
     {
-          $this->root = $root;
+          if ($root) {
+              $this->basePath($root);
+          }
     }
+
+
+
+
+
+    /**
+     * @param $root
+     * @return void
+    */
+    public function basePath($root)
+    {
+        $this->root = $root;
+    }
+
+
 
 
 
@@ -55,7 +72,7 @@ class FileLocator implements FileLocatorInterface
     /**
      * @inheritDoc
     */
-    public function resources(string $pattern, int $flags = 0)
+    public function locateResources(string $pattern, int $flags = 0)
     {
         return glob($this->locate($pattern), $flags);
     }

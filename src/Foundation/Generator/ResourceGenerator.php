@@ -743,7 +743,7 @@ class ResourceGenerator extends StubGenerator
     */
     public function generateTemplate(string $viewPath, string $action): bool
     {
-        $viewPath = $this->renderer->loadTemplatePath($viewPath);
+        $viewPath = $this->renderer->loadTemplate($viewPath);
         $viewPath = str_replace($this->getProjectDir(), '', $viewPath);
 
         $stub = $this->generateStub('routing/template/view', [

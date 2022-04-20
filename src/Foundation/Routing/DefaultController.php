@@ -2,8 +2,10 @@
 namespace Laventure\Foundation\Routing;
 
 
+use Laventure\Component\FileSystem\FileSystem;
 use Laventure\Component\Http\Response\Response;
 use Laventure\Component\Templating\Renderer\Renderer;
+
 
 
 /**
@@ -19,15 +21,15 @@ class DefaultController extends Controller
 
 
 
+
        /**
         * DefaultController constructor
        */
-       public function __construct(Renderer $renderer)
+       public function __construct(Renderer $renderer, FileSystem $fs)
        {
             $renderer->resourcePath(__DIR__.'/Resources/views')
-                     ->cache(false)
-                     ->compress(false)
-            ;
+                     ->cacheDir($fs->locate('/storage/cache/framework/views'))
+                     ->compress(false);
        }
 
 

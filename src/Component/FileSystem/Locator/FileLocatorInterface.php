@@ -20,5 +20,5 @@ interface FileLocatorInterface
      * @param int $flags
      * @return mixed
     */
-    public function resources(string $pattern, int $flags = 0);
+    public function locateResources(string $pattern, int $flags = 0);
 }

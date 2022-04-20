@@ -11,8 +11,16 @@ use Laventure\Component\FileSystem\Stream\Stream;
 /**
  * @FileSystem
 */
-class FileSystem extends FileLocator
+class FileSystem
 {
+
+
+      /**
+       * @var
+      */
+      protected $locator;
+
+
 
 
       /**
@@ -22,8 +30,10 @@ class FileSystem extends FileLocator
       */
       public function __construct($root =  null)
       {
-            parent::__construct($root);
+           $this->locator = new FileLocator($root);
       }
+
+
 
 
 
@@ -34,11 +44,35 @@ class FileSystem extends FileLocator
         * @param string $root
         * @return $this
       */
-      public function root(string $root): self
+      public function basePath(string $root): self
       {
-           $this->root = $root;
+           $this->locator->basePath($root);
 
            return $this;
+      }
+
+
+
+
+      /**
+       * @param string $filename
+       * @return string
+      */
+      public function locate(string $filename): string
+      {
+           return $this->locator->locate($filename);
+      }
+
+
+
+
+      /**
+       * @param string $pattern
+       * @return array|false|mixed
+      */
+      public function resources(string $pattern)
+      {
+           return $this->locator->locateResources($pattern);
       }
 
 
