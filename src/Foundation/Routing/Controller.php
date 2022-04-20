@@ -208,6 +208,6 @@ abstract class Controller implements ContainerAwareInterface
     */
     public function getDB(): Manager
     {
-         return $this->container->get('db.laventure');
+         return $this->container->get('@database');
     }
 }

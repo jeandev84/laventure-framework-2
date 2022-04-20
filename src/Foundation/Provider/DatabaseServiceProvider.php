@@ -29,11 +29,11 @@ class DatabaseServiceProvider extends ServiceProvider
      * @var array
     */
     protected $provides = [
-        Manager::class             => ['db.laventure'],
-        ConnectionInterface::class => ['db.connection'],
+        Manager::class             => ['@database'],
+        ConnectionInterface::class => ['@connection'],
         EntityManager::class       => [EntityManagerInterface::class, ObjectManager::class],
-        Schema::class              => ['db.schema'],
-        Migrator::class            => ['migrator', MigratorInterface::class],
+        Schema::class              => ['@schema'],
+        Migrator::class            => ['@migrator', MigratorInterface::class],
     ];
 
 
