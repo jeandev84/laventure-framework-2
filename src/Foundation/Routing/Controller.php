@@ -95,10 +95,9 @@ abstract class Controller implements ContainerAwareInterface
     /**
      * @param string $template
      * @param array $data
-     * @param Response|null $response
      * @return Response
     */
-    public function render(string $template, array $data = [], Response $response = null): Response
+    public function render(string $template, array $data = []): Response
     {
            $renderer = $this->get('view');
 
@@ -106,15 +105,7 @@ abstract class Controller implements ContainerAwareInterface
                $renderer->withLayout($this->getLayout());
            }
 
-           $output = $renderer->render($template, $data);
-
-           if (! $response) {
-               $response = new Response();
-           }
-
-           $response->setContent($output);
-
-           return $response;
+           return new Response($renderer->render($template, $data));
     }
 
 
