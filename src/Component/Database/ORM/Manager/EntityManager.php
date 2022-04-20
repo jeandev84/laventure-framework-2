@@ -275,7 +275,7 @@ class EntityManager implements EntityManagerInterface
     */
     public function preFlush()
     {
-         $this->updates($this->getCollectedObjects());
+         $this->updates($this->getObjectResults());
     }
 
 
@@ -284,10 +284,9 @@ class EntityManager implements EntityManagerInterface
     /**
      * @return object[]
     */
-    public function getCollectedObjects(): array
+    public function getObjectResults(): array
     {
-        return $this->connection->getCollection()
-                                ->getObjects();
+        return $this->connection->getCollection()->getObjects();
     }
 
 

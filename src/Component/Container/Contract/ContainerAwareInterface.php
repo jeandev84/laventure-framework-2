@@ -11,15 +11,15 @@ interface ContainerAwareInterface
 {
 
     /**
-     * @param ContainerInterface $container
+     * @param Container $container
      * @return mixed
     */
-    public function setContainer(ContainerInterface $container);
+    public function setContainer(Container $container);
 
 
 
     /**
      * @return Container
     */
-    public function getContainer(): ContainerInterface;
+    public function getContainer(): Container;
 }

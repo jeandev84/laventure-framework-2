@@ -61,11 +61,22 @@ class StubGenerator
        /**
         * @return string
        */
-       protected function getStubPath(): string
+       protected function getRoot(): string
        {
             return __DIR__.'/stubs';
        }
 
+
+
+
+       /**
+        * @param string $path
+        * @return string
+       */
+       protected function generateStubPath(string $path): string
+       {
+            return realpath($this->getRoot() . '/' . trim($path, '\\/'));
+       }
 
 
 
@@ -92,7 +103,7 @@ class StubGenerator
           $replacements['GenerateTime']    =  date('d/m/Y H:i:s');
           $replacements['ApplicationName'] =  $this->app->getName();
 
-          $this->fileSystem->root($this->getStubPath());
+          $this->fileSystem->root($this->getRoot());
 
           return $this->fileSystem->replace(
               sprintf('%s.%s', $filename, $this->getStubExtension()),

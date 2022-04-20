@@ -265,9 +265,7 @@ if(! function_exists('view'))
              $render->withLayout(app()->get('@layout'));
         }
 
-        $content = $render->render($template, $data);
-
-        return new Response($content, 200, []);
+        return new Response($render->render($template, $data), 200, []);
     }
 }
 

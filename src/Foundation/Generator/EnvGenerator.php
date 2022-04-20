@@ -3,30 +3,24 @@ namespace Laventure\Foundation\Generator;
 
 
 use Laventure\Component\FileSystem\FileSystem;
+use Laventure\Foundation\Application;
 
 
 /**
  * @EnvGenerator
 */
-class EnvGenerator
+class EnvGenerator extends StubGenerator
 {
 
 
     /**
-     * @var string
-    */
-    protected $fileSystem;
-
-
-
-    /**
+     * @param Application $app
      * @param FileSystem $fileSystem
     */
-    public function __construct(FileSystem $fileSystem)
+    public function __construct(Application $app, FileSystem $fileSystem)
     {
-         $this->fileSystem = $fileSystem;
+          parent::__construct($app, $fileSystem);
     }
-
 
 
 
@@ -36,7 +30,9 @@ class EnvGenerator
     */
     public function generateEnv(): bool
     {
-        return $this->fileSystem->copy('.env.example', '.env');
+        $stubPath = $this->generateStubPath('env/template.stub');
+
+        return $this->fileSystem->copy($stubPath, '.env');
     }
 
 
@@ -51,10 +47,10 @@ class EnvGenerator
     */
     public function writeToEnv(string $key, string $value): bool
     {
-        $assigned   = sprintf("{$key}=%s", $value);
-        $previousContent = $this->fileSystem->read('.env');
-        $newContent = preg_replace("/{$key}=(.*)/", $assigned, $previousContent);
-        $this->fileSystem->remove('.env');
-        return $this->fileSystem->write('.env', $newContent);
+          $assigned   = sprintf("{$key}=%s", $value);
+          $previousContent = $this->fileSystem->read('.env');
+          $newContent = preg_replace("/{$key}=(.*)/", $assigned, $previousContent);
+          $this->fileSystem->remove('.env');
+          return $this->fileSystem->write('.env', $newContent);
     }
 }

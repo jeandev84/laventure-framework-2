@@ -60,7 +60,6 @@ class ConsoleInputArg extends InputArgv
 
         if (! empty($matches)) {
 
-            // have to define also for shortcuts[]
             if (preg_match('#^--([^=]+)=(.*)$#i', $token,$params)) {
                  $this->options[$params[1]] = $params[2];
             }else {

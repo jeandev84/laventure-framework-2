@@ -6,7 +6,6 @@ use Laventure\Component\Auth\Database\UserInterface;
 use Laventure\Component\Auth\Database\User;
 use Laventure\Component\Container\Container;
 use Laventure\Component\Container\Contract\ContainerAwareInterface;
-use Laventure\Component\Container\Contract\ContainerInterface;
 use Laventure\Component\Database\Manager;
 use Laventure\Component\Http\Response\JsonResponse;
 use Laventure\Component\Http\Response\RedirectResponse;
@@ -37,11 +36,12 @@ abstract class Controller implements ContainerAwareInterface
 
 
     /**
-     * @param ContainerInterface $container
+     * @param Container $container
      * @return void
     */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(Container $container)
     {
+         $container->instance("@layout", $this->layout);
          $this->container = $container;
     }
 
@@ -64,10 +64,6 @@ abstract class Controller implements ContainerAwareInterface
     */
     private function getLayout()
     {
-         if ($this->layout) {
-             $this->container->instance("@layout", $this->layout);
-         }
-
          return $this->layout;
     }
 
@@ -75,9 +71,9 @@ abstract class Controller implements ContainerAwareInterface
 
 
     /**
-     * @return ContainerInterface
+     * @return Container
     */
-    public function getContainer(): ContainerInterface
+    public function getContainer(): Container
     {
         return $this->container;
     }
