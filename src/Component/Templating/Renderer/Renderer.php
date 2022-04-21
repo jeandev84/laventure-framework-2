@@ -33,7 +33,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     /**
      * @var string
     */
-    protected $pathExtension = 'php';
+    protected $extension = 'php';
 
 
 
@@ -89,7 +89,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     public function __construct(string $resource = null)
     {
           if ($resource) {
-              $this->resourcePath($resource);
+              $this->resource($resource);
           }
 
           $this->cacheManager = new RenderCacheManager($resource);
@@ -118,7 +118,7 @@ class Renderer implements RendererInterface, RenderLayoutInterface
      * @param string $path
      * @return $this
     */
-    public function resourcePath(string $path): Renderer
+    public function resource(string $path): Renderer
     {
          $this->resource = rtrim($path, '\\/');
 
@@ -201,26 +201,56 @@ class Renderer implements RendererInterface, RenderLayoutInterface
 
 
 
+
+    /**
+     * @param string $extension
+     * @return $this
+    */
+    public function extension(string $extension): self
+    {
+        $this->extension = trim($extension, '.');
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * Get path extension
+     *
+     * @return string
+    */
+    public function getExtension(): string
+    {
+        return sprintf('.%s', $this->extension);
+    }
+
+
+
+
+
     /**
      * @inheritDoc
     */
     public function render(string $template, array $arguments = [])
     {
-        $content = $this->renderTemplate($this->loadTemplate($template));
+          $content = $this->renderTemplate($this->loadTemplate($template));
         
-        if ($this->layout) {
-            $content = $this->renderLayout($content);
-        }
+          if ($this->layout) {
+              $content = $this->renderLayout($content);
+          }
 
-        if ($this->cached) {
-            $content = $this->renderCache($template, $content, $arguments);
-        }
+          if ($this->cached) {
+              $content = $this->renderCache($template, $content, $arguments);
+          }
 
-        if ($this->compressed) {
-            $content = $this->compressor->compress($content);
-        }
+          if ($this->compressed) {
+              $content = $this->compressor->compress($content);
+          }
 
-        return $content;
+          return $content;
     }
 
 
@@ -253,9 +283,9 @@ class Renderer implements RendererInterface, RenderLayoutInterface
     */
     public function renderLayout($content): ?string
     {
-        $content = $this->surroundContent($content);
-        $layoutPath      = sprintf('%s%s', $this->getLayout(), $this->getPathExtension());
-        $layoutContent   = $this->renderTemplate($this->loadPath($layoutPath));
+        $content        = PHP_EOL. $content . PHP_EOL;
+        $layoutPath     = sprintf('%s%s', $this->getLayout(), $this->getExtension());
+        $layoutContent  = $this->renderTemplate($this->loadPath($layoutPath));
 
         return str_replace("{{ content }}", $content, $layoutContent);
     }
@@ -339,21 +369,9 @@ class Renderer implements RendererInterface, RenderLayoutInterface
           $extension = pathinfo($template, PATHINFO_EXTENSION);
           $template  = str_replace('.'. $extension, '', $template);
 
-          return $this->loadPath(sprintf('%s%s', $template, $this->getPathExtension()));
+          return $this->loadPath(sprintf('%s%s', $template, $this->getExtension()));
     }
 
-
-
-
-    /**
-     * Get path extension
-     *
-     * @return string
-     */
-    public function getPathExtension(): string
-    {
-        return sprintf('.%s', $this->pathExtension);
-    }
 
 
 

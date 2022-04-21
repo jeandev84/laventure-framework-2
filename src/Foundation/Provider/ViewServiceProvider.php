@@ -33,7 +33,8 @@ class ViewServiceProvider extends ServiceProvider
               $resource  = $this->locateResourcePath();
 
               $renderer  = new Renderer($resource);
-              $renderer->cache($this->getCacheStatus())
+              $renderer->extension($this->getExtension())
+                       ->cache($this->getCacheStatus())
                        ->cacheDir($this->getCachePath())
                        ->compress($this->getCompressStatus());
 
@@ -102,5 +103,16 @@ class ViewServiceProvider extends ServiceProvider
     private function getCacheStatus(): bool
     {
         return $this->app['config']['view.cache'];
+    }
+
+
+
+
+    /**
+     * @return string
+    */
+    private function getExtension(): string
+    {
+         return $this->app['config']['view.extension'];
     }
 }

@@ -51,31 +51,11 @@ class RenderTags
         return [
             '{%'        =>  "<?php ",
             '%}'        =>  ";?>",
-            '{{'        => "<?=",
-            '}}'        => ";?>",
+            '{{'        =>  "<?=",
+            '}}'        =>  ";?>",
             '@if'       =>  "<?php if",
             '@endif'    =>  "<?php endif; ?>",
-            '@loop'     => "<?php foreach",
-            '@endloop'  =>  "<?php endforeach; ?>",
-        ];
-    }
-
-
-
-
-    /**
-     * @return string[]
-    */
-    public function getContentTagsToReviews(): array
-    {
-        return [
-            '{%'        =>  "<?php ",
-            '%}'        =>  ";?>",
-            '{{'        => "<?=",
-            '}}'        => ";?>",
-            '@if'       =>  "<?php if",
-            '@endif'    =>  "<?php endif; ?>",
-            '@loop'     => "<?php foreach",
+            '@loop'     =>  "<?php foreach",
             '@endloop'  =>  "<?php endforeach; ?>",
         ];
     }

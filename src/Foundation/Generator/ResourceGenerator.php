@@ -167,7 +167,7 @@ class ResourceGenerator extends StubGenerator
     */
     protected function makeRouteViewPath(string $controller, string $action): string
     {
-         return sprintf('%s%s%s.php', $this->transformEntry($controller), DIRECTORY_SEPARATOR, $action);
+         return sprintf('%s%s%s.%s', $this->transformEntry($controller), DIRECTORY_SEPARATOR, $action, $this->renderer->getExtension());
     }
 
 

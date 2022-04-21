@@ -27,9 +27,8 @@ class DefaultController extends Controller
        */
        public function __construct(Renderer $renderer, FileSystem $fs)
        {
-            $renderer->resourcePath(__DIR__.'/Resources/views')
-                     ->cacheDir($fs->locate('/storage/cache/framework/views'))
-                     ->compress(false);
+            $renderer->resource(__DIR__.'/Resources/views')
+                     ->cacheDir($fs->locate('/storage/cache/framework/views'));
        }
 
 
@@ -40,6 +39,6 @@ class DefaultController extends Controller
        */
        public function index(): Response
        {
-            return $this->render('welcome.php');
+            return $this->render('welcome');
        }
 }
