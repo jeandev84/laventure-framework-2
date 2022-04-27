@@ -37,7 +37,7 @@ class DataMapper
        * @param array $attributes
        * @return void
       */
-      protected function resolveAttributes(array $attributes)
+      protected function mapResolvedAttributes(array $attributes)
       {
 
       }
