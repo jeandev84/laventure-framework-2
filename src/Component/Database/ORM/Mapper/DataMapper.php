@@ -18,14 +18,11 @@ class DataMapper
       {
             $attributes = [];
 
-            if (is_object($object)) {
+            $reflection = new \ReflectionObject($object);
 
-                $reflection = new \ReflectionObject($object);
-
-                foreach ($reflection->getProperties() as $property) {
-                    $property->setAccessible(true);
-                    $attributes[$property->getName()] = $property->getValue($object);
-                }
+            foreach ($reflection->getProperties() as $property) {
+                $property->setAccessible(true);
+                $attributes[$property->getName()] = $property->getValue($object);
             }
 
             return $attributes;
